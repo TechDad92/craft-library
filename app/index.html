@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data: craftfile:; img-src 'self' data: blob: craftfile:; connect-src 'self' craftfile:; worker-src 'self' blob:">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Craft Library</title>
+<link rel="stylesheet" href="fonts.css">
+<style>html,body{margin:0;height:100%;overflow:hidden}#root{min-height:100%}</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="vendor/react.production.min.js"></script>
+<script src="vendor/react-dom.production.min.js"></script>
+<script src="vendor/pdf.min.js"></script>
+<script src="screens.js"></script>
+<script src="dcrt.js"></script>
+<script>DCRuntime.start(window.DC_SOURCES, 'Main', document.getElementById('root'));</script>
+</body>
+</html>
