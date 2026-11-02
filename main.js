@@ -64,6 +64,8 @@ function splitName(file) {
 async function safeMove(src, destDir, wantedBase) {
   const { base, ext } = splitName(src);
   const dest = await uniquePath(destDir, wantedBase || base, ext);
+  // Belt and braces: the file must land directly in the folder asked for, never anywhere else.
+  if (!same(path.dirname(norm(dest)), norm(destDir))) throw new Error('That name isn’t allowed, so the file was not moved.');
   try {
     await fsp.rename(src, dest);
   } catch (e) {
@@ -377,9 +379,17 @@ ipcMain.handle('thumb', async (e, p, kind) => {
 function ok(value) { return { ok: true, value }; }
 function fail(err) { return { ok: false, error: (err && err.message) || String(err) }; }
 
+// The same name rules Windows uses, checked before any move or rename.
+function checkName(name) {
+  if (!name) throw new Error('Please type a name.');
+  if (/[\\/:*?"<>|]/.test(name)) throw new Error('Names can’t contain any of these: \\ / : * ? " < > |');
+  if (/[. ]$/.test(name)) throw new Error('Names can’t end with a full stop or a space.');
+}
+
 ipcMain.handle('move', async (e, src, destDir, wantedBase) => {
   try {
     assertAllowed(src); assertAllowed(destDir);
+    if (wantedBase != null) { wantedBase = String(wantedBase).trim(); checkName(wantedBase); }
     if (same(path.dirname(norm(src)), norm(destDir)) && (!wantedBase || wantedBase === splitName(src).base)) return ok(src);
     if (!(await exists(destDir))) throw new Error('That folder isn’t there any more. It may have been moved, or the drive unplugged.');
     return ok(await safeMove(src, destDir, wantedBase));
@@ -390,12 +400,18 @@ ipcMain.handle('rename', async (e, src, newBase) => {
   try {
     assertAllowed(src);
     const name = String(newBase || '').trim();
-    if (!name) throw new Error('Please type a name.');
-    if (/[\\/:*?"<>|]/.test(name)) throw new Error('Names can’t contain any of these: \\ / : * ? " < > |');
-    if (/[. ]$/.test(name)) throw new Error('Names can’t end with a full stop or a space.');
+    checkName(name);
     const { ext } = splitName(src);
     const dest = path.join(path.dirname(src), name + (ext ? '.' + ext : ''));
-    if (same(norm(dest), norm(src))) return ok(src);
+    if (norm(dest) === norm(src)) return ok(src);
+    if (same(norm(dest), norm(src))) {
+      // Only the capital letters changed. Windows counts these as the same name,
+      // so the file goes through a temporary name to make the change stick.
+      const tmp = await uniquePath(path.dirname(src), name + ' (renaming)', ext);
+      await fsp.rename(src, tmp);
+      try { await fsp.rename(tmp, dest); } catch (err) { await fsp.rename(tmp, src).catch(() => {}); throw err; }
+      return ok(dest);
+    }
     if (await exists(dest) && !same(dest, src)) throw new Error('There’s already a file called “' + path.basename(dest) + '” in this folder.');
     await fsp.rename(src, dest);
     return ok(dest);
