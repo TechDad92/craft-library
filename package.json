@@ -1,0 +1,69 @@
+{
+  "name": "craft-library",
+  "productName": "Craft Library",
+  "version": "0.2.3",
+  "description": "Craft Library: a calm file manager for craft files",
+  "main": "main.js",
+  "author": "Craft Library",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "prepare-app": "node tools/prepare.js",
+    "start": "node tools/prepare.js && electron .",
+    "dist": "node tools/prepare.js && electron-builder --win nsis",
+    "pack-dir": "node tools/prepare.js && electron-builder --win dir"
+  },
+  "build": {
+    "appId": "com.craftlibrary.app",
+    "productName": "Craft Library",
+    "files": [
+      "main.js",
+      "preload.js",
+      "app/**/*",
+      "!app/*.dc.html"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Craft Library",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "artifactName": "Craft-Library-Setup-${version}.exe"
+    }
+  },
+  "devDependencies": {
+    "@fontsource/amatic-sc": "^5.3.0",
+    "@fontsource/atkinson-hyperlegible": "^5.3.0",
+    "@fontsource/caveat": "^5.3.0",
+    "@fontsource/dancing-script": "^5.3.0",
+    "@fontsource/figtree": "^5.3.0",
+    "@fontsource/great-vibes": "^5.3.0",
+    "@fontsource/lexend": "^5.3.0",
+    "@fontsource/lobster": "^5.3.0",
+    "@fontsource/pacifico": "^5.3.0",
+    "@fontsource/patrick-hand": "^5.3.0",
+    "@fontsource/permanent-marker": "^5.3.0",
+    "@fontsource/playfair-display": "^5.3.0",
+    "@fontsource/quicksand": "^5.3.0",
+    "@fontsource/special-elite": "^5.3.0",
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8",
+    "pdfjs-dist": "^3.11.174",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "resedit": "^2.0.3"
+  },
+  "dependencies": {
+    "jszip": "^3.10.2"
+  }
+}

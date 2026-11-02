@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>File thumbnail</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&amp;family=Dancing+Script:wght@600&amp;family=Great+Vibes&amp;family=Permanent+Marker&amp;family=Special+Elite&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 100%; height: 100%; aspect-ratio: 4 / 3; overflow: hidden; background: #EEF0F3; font-family: Figtree, system-ui, sans-serif; color: #1C2430">
+
+  <sc-if value="{{ isPaper }}" hint-placeholder-val="{{ true }}">
+    <div style="position: absolute; inset: 0; {{ pattern }}"></div>
+  </sc-if>
+
+  <sc-if value="{{ isDoc }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #E4E8EE">
+      <div style="width: 58%; height: 84%; box-sizing: border-box; padding: 7%; background: #FFFFFF; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18); display: flex; flex-direction: column; gap: 6%">
+        <div style="flex: 1 1 auto; {{ pattern }}"></div>
+        <div style="height: 5%; width: 80%; background: #CBD2DB; border-radius: 2px"></div>
+        <div style="height: 5%; width: 55%; background: #CBD2DB; border-radius: 2px"></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isVector }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; {{ vectorBg }}">
+      <sc-if value="{{ isHeart }}" hint-placeholder-val="{{ true }}">
+        <svg viewBox="0 0 100 100" style="width: 62%; height: 62%" aria-hidden="true"><path d="M50 84 C22 64 8 47 8 32 A20 20 0 0 1 50 22 A20 20 0 0 1 92 32 C92 47 78 64 50 84 Z" fill="#E3F2F0" stroke="#0E6B64" stroke-width="2.5" stroke-linejoin="round"></path><circle cx="50" cy="44" r="12" fill="#FFFFFF" stroke="#0E6B64" stroke-width="2" stroke-dasharray="4 3"></circle></svg>
+      </sc-if>
+      <sc-if value="{{ isStar }}" hint-placeholder-val="{{ false }}">
+        <svg viewBox="0 0 100 100" style="width: 62%; height: 62%" aria-hidden="true"><polygon points="50,8 61,38 93,38 67,57 77,88 50,69 23,88 33,57 7,38 39,38" fill="#E3F2F0" stroke="#0E6B64" stroke-width="2.5" stroke-linejoin="round"></polygon></svg>
+      </sc-if>
+      <sc-if value="{{ isFlower }}" hint-placeholder-val="{{ false }}">
+        <svg viewBox="0 0 100 100" style="width: 62%; height: 62%" aria-hidden="true"><g fill="#E3F2F0" stroke="#0E6B64" stroke-width="2.5"><circle cx="50" cy="29" r="15"></circle><circle cx="70" cy="43.5" r="15"></circle><circle cx="62.5" cy="67" r="15"></circle><circle cx="37.5" cy="67" r="15"></circle><circle cx="30" cy="43.5" r="15"></circle></g><circle cx="50" cy="50" r="10" fill="#FFFFFF" stroke="#0E6B64" stroke-width="2.5"></circle></svg>
+      </sc-if>
+      <sc-if value="{{ isBox }}" hint-placeholder-val="{{ false }}">
+        <svg viewBox="0 0 100 100" style="width: 66%; height: 66%" aria-hidden="true"><path d="M39 6 H61 V28 H83 V50 H61 V94 H39 V50 H17 V28 H39 Z" fill="#E3F2F0" stroke="#0E6B64" stroke-width="2.5" stroke-linejoin="round"></path><g stroke="#0E6B64" stroke-width="1.6" stroke-dasharray="3 3"><path d="M39 28 H61"></path><path d="M39 50 H61"></path><path d="M39 72 H61"></path><path d="M39 28 V50"></path><path d="M61 28 V50"></path></g></svg>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isPdf }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #E4E8EE">
+      <div style="position: relative; width: 56%; height: 84%">
+        <div style="position: absolute; top: 0; left: 8%; width: 100%; height: 100%; background: #F8F9FB; box-shadow: 0 1px 4px rgba(15, 23, 42, 0.14)"></div>
+        <div style="position: absolute; top: 4%; left: 0; width: 100%; height: 100%; box-sizing: border-box; padding: 9%; background: #FFFFFF; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.18); display: flex; flex-direction: column; gap: 6%">
+          <div style="flex: 1 1 auto; display: flex; gap: 8%">
+            <div style="flex: 1 1 0; border: 2px dashed #8A97A8; border-radius: 4px"></div>
+            <div style="flex: 1 1 0; border: 2px dashed #8A97A8; border-radius: 50%"></div>
+          </div>
+          <div style="font-size: 10px; font-weight: 600; color: #566170; white-space: nowrap; overflow: hidden">Page 1 of {{ pages }}</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isZip }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; background: #EEF0F3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8%">
+      <div style="position: relative; width: 56%; height: 52%">
+        <div style="position: absolute; left: 0; top: 10%; width: 46%; height: 80%; transform: rotate(-9deg); border: 2px solid #FFFFFF; box-shadow: 0 2px 5px rgba(15, 23, 42, 0.2); background-color: #9F1D2B; background-image: radial-gradient(#F4D58D 17%, transparent 19%); background-size: 14px 14px"></div>
+        <div style="position: absolute; right: 0; top: 10%; width: 46%; height: 80%; transform: rotate(9deg); border: 2px solid #FFFFFF; box-shadow: 0 2px 5px rgba(15, 23, 42, 0.2); background-color: #C49A6C"></div>
+        <div style="position: absolute; left: 27%; top: 0; width: 46%; height: 84%; border: 2px solid #FFFFFF; box-shadow: 0 3px 7px rgba(15, 23, 42, 0.25); background-color: #FFFFFF; background-image: linear-gradient(90deg, rgba(37, 99, 235, 0.32) 50%, transparent 50%), linear-gradient(rgba(37, 99, 235, 0.32) 50%, transparent 50%); background-size: 12px 12px"></div>
+      </div>
+      <div style="padding: 3px 10px; border-radius: 999px; background: #FFFFFF; font-size: 12px; font-weight: 700; color: #3A4553; white-space: nowrap">{{ inner }} files inside</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isFont }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; background: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px">
+      <div style="font-family: {{ fontStack }}; font-size: 48px; font-weight: 600; line-height: 1; color: #1C2430">Aa</div>
+      <div style="font-family: {{ fontStack }}; font-size: 16px; white-space: nowrap; color: #3A4553">Happy Birthday</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isUnknown }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; background: #EEF0F3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px">
+      <svg width="44" height="52" viewBox="0 0 44 52" aria-hidden="true"><path d="M4 2 H28 L40 14 V50 H4 Z" fill="#FFFFFF" stroke="#8A97A8" stroke-width="2" stroke-linejoin="round"></path><path d="M28 2 V14 H40" fill="none" stroke="#8A97A8" stroke-width="2" stroke-linejoin="round"></path></svg>
+      <div style="font-size: 12px; font-weight: 600; color: #566170">No preview</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasImg }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; {{ imgBg }}">
+      <img src="{{ imgSrc }}" alt="" draggable="false" style="{{ imgStyle }}">
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isGeneric }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; inset: 0; background: #EEF0F3; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 8px; box-sizing: border-box; text-align: center">
+      <svg width="40" height="48" viewBox="0 0 44 52" aria-hidden="true"><path d="M4 2 H28 L40 14 V50 H4 Z" fill="#FFFFFF" stroke="#8A97A8" stroke-width="2" stroke-linejoin="round"></path><path d="M28 2 V14 H40" fill="none" stroke="#8A97A8" stroke-width="2" stroke-linejoin="round"></path></svg>
+      <div style="font-size: 12px; font-weight: 600; color: #566170">{{ genericText }}</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showInner }}" hint-placeholder-val="{{ false }}">
+    <div style="position: absolute; right: 8px; bottom: 8px; padding: 2px 8px; border-radius: 999px; background: #FFFFFF; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25); font-size: 11px; font-weight: 700; color: #3A4553; white-space: nowrap">{{ inner }} files inside</div>
+  </sc-if>
+
+  <div style="position: absolute; top: 8px; left: 8px; padding: 2px 7px; border-radius: 999px; background: rgba(17, 24, 39, 0.82); color: #FFFFFF; font-size: 11px; font-weight: 700; letter-spacing: 0.04em">{{ extLabel }}</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"file":{"editor":null},"$preview":{"width":240,"height":180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var f = this.props.file || { ext: 'jpg', kind: 'paper', look: 'red-dots' };
+    var P = {
+      'red-dots': 'background-color: #9F1D2B; background-image: radial-gradient(#F4D58D 17%, transparent 19%), radial-gradient(#F4D58D 17%, transparent 19%); background-size: 26px 26px; background-position: 0 0, 13px 13px',
+      'gingham': 'background-color: #FFFFFF; background-image: linear-gradient(90deg, rgba(37, 99, 235, 0.32) 50%, transparent 50%), linear-gradient(rgba(37, 99, 235, 0.32) 50%, transparent 50%); background-size: 22px 22px',
+      'mint-stripes': 'background-color: #EFF9F5; background-image: repeating-linear-gradient(45deg, #9BD3BF 0 9px, #EFF9F5 9px 18px)',
+      'blossom': 'background-color: #FDF0F6; background-image: radial-gradient(circle at 30% 30%, #EC8FBF 0 9%, transparent 10%), radial-gradient(circle at 72% 64%, #F6BFD9 0 12%, transparent 13%), radial-gradient(circle at 70% 22%, #7FB59A 0 4%, transparent 5%); background-size: 46px 46px',
+      'kraft': 'background-color: #C49A6C; background-image: radial-gradient(rgba(60, 35, 10, 0.22) 1px, transparent 1.6px), radial-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1.6px); background-size: 7px 7px, 11px 11px; background-position: 0 0, 3px 5px',
+      'navy-stars': 'background-color: #1E3557; background-image: radial-gradient(#FFFFFF 1.4px, transparent 2px), radial-gradient(#F4D58D 1px, transparent 1.6px); background-size: 24px 24px, 17px 17px; background-position: 0 0, 8px 11px',
+      'chevron': 'background-color: #FFF5D1; background-image: linear-gradient(135deg, #F2B84B 25%, transparent 25%), linear-gradient(225deg, #F2B84B 25%, transparent 25%); background-size: 26px 26px; background-position: -13px 0, -13px 0'
+    };
+    var k = f.kind;
+    var real = !!f.real;
+    var hasImg = real && !!f.img;
+    if (real) k = hasImg || k === 'font' ? (k === 'font' && !hasImg ? 'font' : '') : '';
+    var grid = 'background-color: #F4F8FC; background-image: linear-gradient(#DCE6F2 1px, transparent 1px), linear-gradient(90deg, #DCE6F2 1px, transparent 1px); background-size: 12px 12px';
+    return {
+      extLabel: String(f.ext || '').toUpperCase(),
+      isPaper: k === 'paper',
+      isDoc: k === 'doc',
+      isVector: k === 'vector',
+      isPdf: k === 'pdf',
+      isZip: k === 'zip',
+      isFont: k === 'font',
+      isUnknown: !real && (k === 'unknown' || !k),
+      hasImg: hasImg,
+      imgSrc: f.img || '',
+      imgBg: f.fit === 'cover' ? 'background: #EEF0F3' : 'background: #FFFFFF',
+      imgStyle: f.fit === 'cover' ? 'width: 100%; height: 100%; object-fit: cover; display: block' : 'max-width: 92%; max-height: 92%; object-fit: contain; display: block',
+      isGeneric: real && !hasImg && k !== 'font',
+      genericText: f.loading ? 'Loading preview…' : 'No preview',
+      showInner: real && f.kind === 'zip' && (f.inner || 0) > 0,
+      pattern: P[f.look] || P['kraft'],
+      vectorBg: f.ext === 'dxf' ? grid : 'background: #FFFFFF',
+      isHeart: f.look === 'heart',
+      isStar: f.look === 'star',
+      isFlower: f.look === 'flower',
+      isBox: f.look === 'box',
+      pages: f.pages || 1,
+      inner: f.inner || 0,
+      fontStack: f.fontStack || "'Dancing Script', cursive"
+    };
+  }
+}
+</script>
+</body>
+</html>
