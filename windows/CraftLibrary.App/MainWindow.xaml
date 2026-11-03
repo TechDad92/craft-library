@@ -157,7 +157,14 @@
                 <v:PreviewView DockPanel.Dock="{Binding PreviewBottom, Converter={StaticResource SideIf}, ConverterParameter='Bottom|Right'}"
                                Visibility="{Binding ShowPreviewPanel, Converter={StaticResource Vis}}" />
                 <Grid>
-                    <v:FilesView Visibility="{Binding IsBrowse, Converter={StaticResource Vis}}" />
+                    <v:FilesView Visibility="{Binding ShowFiles, Converter={StaticResource Vis}}" />
+                    <!-- First visit -->
+                    <StackPanel Visibility="{Binding IsSetup, Converter={StaticResource Vis}}" HorizontalAlignment="Center" Margin="24,70,24,0" MaxWidth="480" TextElement.FontFamily="{DynamicResource F.files}">
+                        <c:Icon Glyph="{StaticResource Icon.Folder}" Size="64" Thickness="1.6" Foreground="{DynamicResource B.accent-strong}" HorizontalAlignment="Center" />
+                        <TextBlock Text="Welcome to Craft Library" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,14,0,10" />
+                        <TextBlock FontSize="16" Foreground="{DynamicResource B.muted}" TextWrapping="Wrap" TextAlignment="Center"
+                                   Text="Start by choosing your main craft folder. The app only works inside the folders you choose, so nothing else on the computer is touched. You can change how the app looks any time in Settings." />
+                    </StackPanel>
                     <v:DuplicatesView Visibility="{Binding IsDupes, Converter={StaticResource Vis}}" />
                     <v:BinView Visibility="{Binding IsBin, Converter={StaticResource Vis}}" />
                 </Grid>

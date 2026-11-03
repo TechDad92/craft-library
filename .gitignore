@@ -1,9 +1,13 @@
+# Old Electron version
 node_modules/
-dist/
-app/vendor/
-app/fonts/
-app/fonts.css
-app/screens.js
+legacy-electron/node_modules/
+legacy-electron/dist/
+legacy-electron/app/vendor/
+legacy-electron/app/fonts/
+legacy-electron/app/fonts.css
+legacy-electron/app/screens.js
+
+# C# version
 windows/**/bin/
 windows/**/obj/
 windows/publish/

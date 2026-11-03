@@ -457,6 +457,7 @@ public sealed partial class MainViewModel
 
     // ---------------- duplicates ----------------
     public bool IsBrowse => View == "browse";
+    public bool ShowFiles => View == "browse" && !IsSetup;
     public bool IsDupes => View == "dupes";
     public bool IsBin => View == "bin";
 

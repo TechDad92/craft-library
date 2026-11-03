@@ -23,6 +23,17 @@
         </Border.Style>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
             <StackPanel Margin="20,16,20,24">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Style.Triggers>
+                            <!-- At the bottom of the window the panel is very wide: keep it to a comfortable reading width. -->
+                            <DataTrigger Binding="{Binding PreviewBottom}" Value="True">
+                                <Setter Property="MaxWidth" Value="620" />
+                                <Setter Property="HorizontalAlignment" Value="Left" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
                 <!-- Heading -->
                 <DockPanel Margin="0,0,0,12">
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">

@@ -35,6 +35,8 @@ public sealed record ThumbResult(BitmapSource? Image, int Inner);
 public sealed class ThumbnailService : IDisposable
 {
     public const int Side = 384;
+    /// <summary>Raise this when the way thumbnails are made changes, so old saved ones are made again.</summary>
+    private const int CacheVersion = 2;
     private const int MemoryLimit = 260;
     private const int QueueLimit = 400;
 
@@ -67,7 +69,7 @@ public sealed class ThumbnailService : IDisposable
     }
 
     private static string KeyFor(IThumbTarget t) =>
-        Convert.ToHexString(SHA1.HashData(Encoding.UTF8.GetBytes(t.Path.ToLowerInvariant() + "|" + t.SizeBytes + "|" + t.ModifiedUtc.Ticks)))[..24];
+        Convert.ToHexString(SHA1.HashData(Encoding.UTF8.GetBytes(CacheVersion + "|" + t.Path.ToLowerInvariant() + "|" + t.SizeBytes + "|" + t.ModifiedUtc.Ticks)))[..24];
 
     /// <summary>A thumbnail already in memory, if there is one (no waiting).</summary>
     public ThumbResult? Peek(IThumbTarget t)
@@ -235,6 +237,10 @@ public sealed class ThumbnailService : IDisposable
         var dc = NativeMethods.GetDC(IntPtr.Zero);
         try { if (NativeMethods.GetDIBits(dc, hbm, 0, (uint)h, bits, ref bmi, 0) == 0) return null; }
         finally { NativeMethods.ReleaseDC(IntPtr.Zero, dc); }
+        // A completely empty picture means "no thumbnail" (some thumbnail makers do this instead of saying so).
+        var anyPixel = false;
+        for (var i = 0; i < bits.Length; i++) if (bits[i] != 0) { anyPixel = true; break; }
+        if (!anyPixel) return null;
         // Photos come back with an empty see-through channel; treat those as solid.
         var anyAlpha = false;
         for (var i = 3; i < bits.Length; i += 4) if (bits[i] != 0) { anyAlpha = true; break; }
