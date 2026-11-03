@@ -148,18 +148,20 @@
                                                 <Button Style="{StaticResource Btn.Row}" Command="{Binding Open}" FontSize="14" Padding="8,4">
                                                     <DockPanel>
                                                         <c:Icon DockPanel.Dock="Right" Glyph="{StaticResource Icon.ChevronRight}" Size="16" Margin="8,0,0,0" />
-                                                        <TextBlock DockPanel.Dock="Right" Text="{Binding FontLabel}" FontFamily="{Binding Family}" FontWeight="Normal" Foreground="{DynamicResource B.muted}" MaxWidth="170" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                                                        <TextBlock Text="{Binding Label}" VerticalAlignment="Center">
-                                                            <TextBlock.Style>
-                                                                <Style TargetType="TextBlock">
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding Bold}" Value="True">
-                                                                            <Setter Property="FontWeight" Value="Bold" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </TextBlock.Style>
-                                                        </TextBlock>
+                                                        <StackPanel VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding Label}" TextWrapping="Wrap">
+                                                                <TextBlock.Style>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding Bold}" Value="True">
+                                                                                <Setter Property="FontWeight" Value="Bold" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </TextBlock.Style>
+                                                            </TextBlock>
+                                                            <TextBlock Text="{Binding FontLabel}" FontFamily="{Binding Family}" FontSize="15" FontWeight="Normal" Foreground="{DynamicResource B.muted}" TextTrimming="CharacterEllipsis" />
+                                                        </StackPanel>
                                                     </DockPanel>
                                                 </Button>
                                             </DataTemplate>

@@ -29,6 +29,15 @@ public partial class App : Application
         }
 
         DispatcherUnhandledException += OnUnexpectedProblem;
+        // For testing: CRAFT_TRACE=1 writes any screen-wiring problems to bindings.log.
+        if (Environment.GetEnvironmentVariable("CRAFT_TRACE") == "1")
+        {
+            var listener = new System.Diagnostics.TextWriterTraceListener(Path.Combine(DataDir, "bindings.log"));
+            System.Diagnostics.PresentationTraceSources.DataBindingSource.Listeners.Add(listener);
+            System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = System.Diagnostics.SourceLevels.Warning;
+            System.Diagnostics.PresentationTraceSources.ResourceDictionarySource.Listeners.Add(listener);
+            System.Diagnostics.Trace.AutoFlush = true;
+        }
         AppDomain.CurrentDomain.UnhandledException += (_, a) => Log(a.ExceptionObject as Exception);
         TaskScheduler.UnobservedTaskException += (_, a) => { Log(a.Exception); a.SetObserved(); };
 
