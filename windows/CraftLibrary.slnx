@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CraftLibrary.Core/CraftLibrary.Core.csproj" />
+  <Project Path="CraftLibrary.Tests/CraftLibrary.Tests.csproj" />
+</Solution>
