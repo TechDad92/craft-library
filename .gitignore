@@ -4,3 +4,7 @@ app/vendor/
 app/fonts/
 app/fonts.css
 app/screens.js
+windows/**/bin/
+windows/**/obj/
+windows/publish/
+windows/dist/
