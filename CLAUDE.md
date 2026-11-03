@@ -59,6 +59,16 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
 - Version: only in `<Version>` in `CraftLibrary.App.csproj` (the build scripts read it from there).
 - In a Claude Code cloud session the .NET download site is blocked; install the SDK with `apt-get install dotnet-sdk-10.0`.
 
+## Releasing a new version
+1. Raise `<Version>` in `windows/CraftLibrary.App/CraftLibrary.App.csproj`.
+2. Write `docs/releases/<version>.md` in plain words (sections: Installing, What's new, Fixes, Changed,
+   Good to know) and add a short entry at the top of `CHANGELOG.md`.
+3. Run `windows/build.sh` (runs the tests, then builds `windows/dist/Craft-Library-Setup-<version>.exe`).
+4. Commit, push, and push a tag `v<version>`. Send the user the installer file.
+5. Claude Code cloud sessions can't create GitHub releases (refused with 403), so the user publishes it:
+   Releases › Draft a new release › tag `v<version>`, title `Craft Library <version>`, paste the notes,
+   attach the installer.
+
 ## Trying it without Windows (Wine)
 `apt install wine64 wine32:i386 xvfb xdotool imagemagick zip`, then:
 `windows/tools/make-test-library.sh <prefix>` builds a test library, and
