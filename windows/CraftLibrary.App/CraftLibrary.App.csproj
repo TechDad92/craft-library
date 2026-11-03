@@ -28,6 +28,8 @@
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <PublishReadyToRun>false</PublishReadyToRun>
     <TieredPGO>true</TieredPGO>
+    <!-- The screen code sometimes changes a value quietly and redraws everything at once afterwards. -->
+    <NoWarn>$(NoWarn);MVVMTK0034</NoWarn>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>

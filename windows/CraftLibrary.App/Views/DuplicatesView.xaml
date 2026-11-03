@@ -1,0 +1,75 @@
+<UserControl x:Class="CraftLibrary.App.Views.DuplicatesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:CraftLibrary.App.Controls"
+             TextElement.FontFamily="{DynamicResource F.files}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+        <StackPanel Margin="24,20,24,32" MaxWidth="1000" HorizontalAlignment="Left">
+            <TextBlock Text="Duplicates" FontSize="26" FontWeight="Bold" />
+            <TextBlock Style="{StaticResource Muted}" FontSize="14" Margin="0,6,0,0" MaxWidth="760" HorizontalAlignment="Left"
+                       Text="These are exact copies: the same file saved more than once, even when the names are different, across every location you have added. Designs that only look similar are never listed. Anything you remove goes to the Recycle Bin, and Undo brings it back." />
+            <TextBlock Text="{Binding DupSummary}" FontSize="14" FontWeight="SemiBold" Margin="0,12,0,16" />
+
+            <StackPanel Visibility="{Binding HasDupGroups, Converter={StaticResource Vis}, ConverterParameter=not}" Margin="0,24,0,0">
+                <TextBlock Text="No duplicates left" FontSize="18" FontWeight="Bold" />
+                <TextBlock Text="Every file in the library is saved only once." Style="{StaticResource Muted}" FontSize="14" Margin="0,4,0,0" />
+            </StackPanel>
+
+            <ItemsControl ItemsSource="{Binding DupGroups}" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border x:Name="Card" Style="{StaticResource Card}" Padding="16" Margin="0,0,0,16">
+                            <DockPanel>
+                                <Border DockPanel.Dock="Left" Width="140" Height="110" CornerRadius="12" Background="#FFFFFF" BorderBrush="{DynamicResource B.border}" BorderThickness="1" Margin="0,0,16,0" VerticalAlignment="Top">
+                                    <Grid>
+                                        <Border CornerRadius="11" Margin="4" Background="{Binding First.Thumb, Converter={StaticResource ThumbFill}}" />
+                                        <Border Style="{StaticResource TypeBadge}">
+                                            <TextBlock Text="{Binding First.TypeBadge}" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding Sub}" Style="{StaticResource Muted}" FontSize="14" Margin="0,2,0,10" />
+                                    <ItemsControl ItemsSource="{Binding Copies}" Focusable="False">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border BorderBrush="{DynamicResource B.line}" BorderThickness="0,1,0,0" Padding="0,10">
+                                                    <DockPanel>
+                                                        <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center">
+                                                            <Button Style="{StaticResource Btn.Primary}" Content="Keep this one" Command="{Binding Keep}" Margin="8,0,0,0" />
+                                                            <Button Style="{StaticResource Btn.Plain}" Content="Show in folder" Command="{Binding Show}" Margin="8,0,0,0" />
+                                                            <Button Style="{StaticResource Btn.Plain}" Command="{Binding Recycle}" Margin="8,0,0,0">
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <c:Icon Glyph="{StaticResource Icon.Trash}" Size="16" Margin="0,0,6,0" />
+                                                                    <TextBlock Text="Recycle" />
+                                                                </StackPanel>
+                                                            </Button>
+                                                        </WrapPanel>
+                                                        <StackPanel VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding Item.FullName}" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                                            <TextBlock Text="{Binding FolderPath}" FontSize="13" Foreground="{DynamicResource B.muted}" TextWrapping="Wrap" />
+                                                            <TextBlock FontSize="12" Foreground="{DynamicResource B.muted}">
+                                                                <Run Text="Added" /> <Run Text="{Binding Item.Added, Mode=OneWay}" /> <Run Text="·" /> <Run Text="{Binding Item.Size, Mode=OneWay}" />
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                    </DockPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Focused}" Value="True">
+                                <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource B.accent-line}" />
+                                <Setter TargetName="Card" Property="BorderThickness" Value="3" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

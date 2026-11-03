@@ -22,6 +22,8 @@ public interface IThumbTarget
     FileKind Kind { get; }
     /// <summary>Called on the screen's thread when the thumbnail is ready (null = no preview for this file).</summary>
     void ThumbReady(BitmapSource? image, int innerCount);
+    /// <summary>The request was dropped (she moved on); ask again if it comes back on screen. Any thread.</summary>
+    void ThumbCancelled();
 }
 
 public sealed record ThumbResult(BitmapSource? Image, int Inner);
@@ -86,6 +88,7 @@ public sealed class ThumbnailService : IDisposable
                 var last = _queue.Last!;
                 _queue.RemoveLast();
                 _queued.Remove(last.Value);
+                last.Value.ThumbCancelled();
             }
             Monitor.Pulse(_gate);
         }
@@ -94,7 +97,12 @@ public sealed class ThumbnailService : IDisposable
     /// <summary>Drop everything waiting, e.g. when she opens another folder, so the new one's come first.</summary>
     public void ClearQueue()
     {
-        lock (_gate) { _queue.Clear(); _queued.Clear(); }
+        lock (_gate)
+        {
+            foreach (var t in _queue) t.ThumbCancelled();
+            _queue.Clear();
+            _queued.Clear();
+        }
     }
 
 
