@@ -103,6 +103,26 @@
         <Setter Property="Padding" Value="0" />
     </Style>
 
+    <!-- Minimise / maximise / close, in the top-right corner of the banner. Square, see-through, no stitching. -->
+    <Style x:Key="Btn.Caption" TargetType="Button" BasedOn="{StaticResource Btn.Ghost}">
+        <Setter Property="Width" Value="48" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="c:Ui.Radius" Value="0" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Foreground" Value="{DynamicResource B.text}" />
+        <Setter Property="ToolTipService.IsEnabled" Value="True" />
+    </Style>
+    <Style x:Key="Btn.CaptionClose" TargetType="Button" BasedOn="{StaticResource Btn.Caption}">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#C42B1C" />
+                <Setter Property="Foreground" Value="White" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- Words in the accent colour, like a link. -->
     <Style x:Key="Btn.Link" TargetType="ButtonBase" BasedOn="{StaticResource Btn.Ghost}">
         <Setter Property="Foreground" Value="{DynamicResource B.accent-text}" />

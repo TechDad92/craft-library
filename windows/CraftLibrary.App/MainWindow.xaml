@@ -8,6 +8,11 @@
         Background="{DynamicResource B.bg}" Foreground="{DynamicResource B.text}"
         UseLayoutRounding="True" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Ideal"
         WindowStartupLocation="CenterScreen">
+    <!-- No separate Windows title bar: the banner is the title bar (drag it to move the window, double-click to maximise).
+         The bottom glass line keeps Windows' drop shadow. The caption height is set from the banner in MainWindow.xaml.cs. -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="76" ResizeBorderThickness="6" GlassFrameThickness="0,0,0,1" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
     <Grid TextBlock.LineHeight="{DynamicResource LineHeight}">
         <!-- Background pattern (Settings › Background), behind everything. -->
         <Rectangle Fill="{DynamicResource B.texture}" IsHitTestVisible="False" />
@@ -22,8 +27,20 @@
             </Grid.RowDefinitions>
 
             <!-- ============ Top banner ============ -->
-            <Border Background="{DynamicResource B.chrome}" BorderBrush="{DynamicResource B.divider}" BorderThickness="0,0,0,3" Padding="24,12" TextElement.FontFamily="{DynamicResource F.banner}">
-                <DockPanel LastChildFill="False">
+            <Border x:Name="Banner" Background="{DynamicResource B.chrome}" BorderBrush="{DynamicResource B.divider}" BorderThickness="0,0,0,3" Padding="24,12,0,12" TextElement.FontFamily="{DynamicResource F.banner}">
+                <DockPanel LastChildFill="True">
+                    <!-- Window buttons, flush in the top-right corner -->
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top" Margin="14,-12,0,0" WindowChrome.IsHitTestVisibleInChrome="True">
+                        <Button Style="{StaticResource Btn.Caption}" Click="OnMinimise" ToolTip="Minimise" AutomationProperties.Name="Minimise">
+                            <c:Icon Glyph="{StaticResource Icon.WinMin}" Size="20" Thickness="1.2" />
+                        </Button>
+                        <Button x:Name="MaxButton" Style="{StaticResource Btn.Caption}" Click="OnMaximise" ToolTip="Maximise" AutomationProperties.Name="Maximise">
+                            <c:Icon x:Name="MaxIcon" Glyph="{StaticResource Icon.WinMax}" Size="20" Thickness="1.2" />
+                        </Button>
+                        <Button Style="{StaticResource Btn.CaptionClose}" Click="OnCloseWindow" ToolTip="Close" AutomationProperties.Name="Close">
+                            <c:Icon Glyph="{StaticResource Icon.WinClose}" Size="20" Thickness="1.2" />
+                        </Button>
+                    </StackPanel>
                     <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
                         <Grid Width="48" Height="48">
                             <Border CornerRadius="12" Background="{DynamicResource B.accent}" BorderBrush="{DynamicResource B.accent-line}" BorderThickness="1" />
@@ -33,15 +50,8 @@
                         <TextBlock Text="Craft Library" FontSize="21" FontWeight="Bold" Margin="12,0,24,0" VerticalAlignment="Center" />
                     </StackPanel>
 
-                    <!-- Search -->
-                    <Grid DockPanel.Dock="Left" Width="480" VerticalAlignment="Center" Visibility="{Binding ShowSearch, Converter={StaticResource Vis}}">
-                        <TextBox x:Name="SearchBox" Style="{StaticResource Field}" Background="{DynamicResource B.panel}" BorderBrush="Transparent" Padding="38,8,12,8"
-                                 Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" c:Ui.Placeholder="Search all files by name" AutomationProperties.Name="Search all files by name" />
-                        <c:Icon Glyph="{StaticResource Icon.Search}" Size="18" Foreground="{DynamicResource B.muted}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="13,0,0,0" />
-                    </Grid>
-
                     <!-- Right-hand buttons -->
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True">
                         <Border Visibility="{Binding ShowProgressPill, Converter={StaticResource Vis}}" Background="{DynamicResource B.panel}" CornerRadius="999" Padding="14,8" Margin="0,0,10,0" VerticalAlignment="Center">
                             <StackPanel Orientation="Horizontal">
                                 <c:Icon Glyph="{StaticResource Icon.Check}" Size="16" Foreground="{DynamicResource B.accent-text}" Margin="0,0,6,0" />
@@ -147,6 +157,20 @@
                             </Popup>
                         </Grid>
                     </StackPanel>
+                    <!-- Search: last, so it takes the space left over and shrinks on a narrow window -->
+                    <Grid>
+                        <!-- Up to 480 wide next to the title; narrower when the window is small. The empty column takes the rest (and stays draggable). -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MaxWidth="496" />
+                            <ColumnDefinition Width="0.001*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" Margin="0,0,16,0" VerticalAlignment="Center" Visibility="{Binding ShowSearch, Converter={StaticResource Vis}}" WindowChrome.IsHitTestVisibleInChrome="True">
+                            <TextBox x:Name="SearchBox" Style="{StaticResource Field}" Background="{DynamicResource B.panel}" BorderBrush="Transparent" Padding="38,8,12,8"
+                                     Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" c:Ui.Placeholder="Search all files by name" AutomationProperties.Name="Search all files by name" />
+                            <c:Icon Glyph="{StaticResource Icon.Search}" Size="18" Foreground="{DynamicResource B.muted}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="13,0,0,0" />
+                        </Grid>
+                    </Grid>
+
                 </DockPanel>
             </Border>
 
@@ -171,12 +195,13 @@
             </DockPanel>
 
             <!-- ============ Settings panel (slides over from the right) ============ -->
-            <Grid Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Right" Width="440" Visibility="{Binding SettingsOpen, Converter={StaticResource Vis}}">
+            <!-- Below the banner, so the window buttons stay reachable. -->
+            <Grid Grid.Row="1" HorizontalAlignment="Right" Width="440" Visibility="{Binding SettingsOpen, Converter={StaticResource Vis}}">
                 <v:SettingsView DataContext="{Binding SettingsVm}" />
             </Grid>
 
             <!-- ============ Pop-up windows ============ -->
-            <v:DialogsView Grid.Row="0" Grid.RowSpan="2" />
+            <v:DialogsView Grid.Row="0" Grid.RowSpan="2" WindowChrome.IsHitTestVisibleInChrome="True" />
 
             <!-- ============ Message at the bottom ============ -->
             <Border Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="24,0,24,24" MaxWidth="760"

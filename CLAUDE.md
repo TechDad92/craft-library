@@ -4,7 +4,7 @@ A Windows desktop app that helps the user's mum organise thousands of craft file
 patterned papers (JPG/PNG/PSD), SVG/DXF/EPS/Silhouette cut files, Word documents that hold a paper
 image, PDFs, zip bundles and fonts. It's a file manager first, with sorting tools added on.
 
-Current version: **0.3.0**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
+Current version: **0.3.1**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
 The Electron version is in `legacy-electron/` for reference only. Do not change it.
 
 ## Who it's for: these rules matter
@@ -48,6 +48,9 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
     `Styles.xaml` (stitched buttons `Btn.*`, fields, checks, scroll bars, drop-downs); `Icons.xaml` (line icons
     from the original design, 24×24, drawn by `Controls/Icon`).
   - `Fonts/`: Figtree, Atkinson Hyperlegible, Lexend, OpenDyslexic (TTF, OFL).
+  - Window: no Windows title bar (`WindowChrome`); the banner is the caption (`CaptionHeight` follows its height),
+    so anything clickable in it needs `WindowChrome.IsHitTestVisibleInChrome="True"`. Minimise/maximise/close are
+    `Btn.Caption` buttons; `MainWindow.xaml.cs` handles `WM_GETMINMAXINFO` so maximised fills the work area.
   - `App.xaml.cs`: single instance, unexpected errors go to `problems.log` and the app keeps going;
     `CRAFT_TRACE=1` writes binding problems to `bindings.log` (for testing).
 - `CraftLibrary.Tests`: xUnit, runs on Linux (`dotnet test windows/CraftLibrary.Tests`).
@@ -75,6 +78,7 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
 `windows/tools/run-in-wine.sh --build 55 shot1 "mousemove 182 223" "click 1"` runs the app and screenshots it
 (Wine takes ~45 s to start). Wine limitations, all fine on real Windows: shell thumbnails are empty, Put back
 can't find Wine's Recycle Bin, pop-ups show black corners, text spacing looks a little uneven.
+On some cloud machines Wine itself crashes ("free(): invalid pointer", even for `wine cmd`); then test on Windows.
 
 ## Not yet confirmed on real Windows
 Everything: 0.3.0 has only been run under Wine. Specifically: shell thumbnails (incl. PSD/EPS via PowerToys),
