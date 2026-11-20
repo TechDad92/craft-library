@@ -25,7 +25,10 @@ public partial class MainWindow : Window
         Activated += (_, _) => Vm?.WindowActivated();
         Closed += (_, _) => _popout?.Close();
         StateChanged += (_, _) => SyncWindowButtons();
-        Banner.SizeChanged += (_, _) => SyncCaptionHeight();
+        Banner.SizeChanged += (_, _) => { SyncCaptionHeight(); FitSearchBox(); };
+        BannerLeft.SizeChanged += (_, _) => FitSearchBox();
+        BannerRight.SizeChanged += (_, _) => FitSearchBox();
+        MenuArea.SizeChanged += (_, _) => FitSearchBox();
     }
 
     // ---------------- the banner is the title bar ----------------
@@ -44,6 +47,20 @@ public partial class MainWindow : Window
         MaxIcon.Glyph = (System.Windows.Media.Geometry)FindResource(max ? "Icon.WinRestore" : "Icon.WinMax");
         MaxButton.ToolTip = max ? "Restore down" : "Maximise";
         System.Windows.Automation.AutomationProperties.SetName(MaxButton, max ? "Restore down" : "Maximise");
+    }
+
+    /// <summary>
+    /// The Menu button and search box sit centred on the window. The search box is 480 wide when there is room,
+    /// and narrower when the window is small, so it never pushes into the title or the window buttons.
+    /// </summary>
+    private void FitSearchBox()
+    {
+        var width = Banner.ActualWidth - Banner.Padding.Left - Banner.Padding.Right;
+        if (width <= 0) return;
+        var side = Math.Max(BannerLeft.DesiredSize.Width, BannerRight.DesiredSize.Width);
+        var room = width - 2 * side - MenuArea.DesiredSize.Width - 16;
+        var w = Math.Clamp(room, 160, 480);
+        if (Math.Abs(SearchArea.Width - w) > 0.5) SearchArea.Width = w;
     }
 
     /// <summary>The draggable strip is exactly as tall as the banner (which grows with the text size setting).</summary>

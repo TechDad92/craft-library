@@ -2,6 +2,9 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.3.2 (20 Nov 2026)
+The Menu button and search box now sit together in the middle of the banner. See [docs/releases/0.3.2.md](docs/releases/0.3.2.md).
+
 ## 0.3.1 (20 Nov 2026)
 The banner is now the top of the window: no separate Windows title bar, with minimise, maximise and close
 built into the banner. A maximised window stops at the taskbar. See [docs/releases/0.3.1.md](docs/releases/0.3.1.md).
