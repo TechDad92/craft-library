@@ -1,5 +1,8 @@
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Interop;
+using System.Windows.Shell;
 using System.Windows.Controls;
 using System.Windows.Input;
 using CraftLibrary.App.ViewModels;
@@ -21,13 +24,76 @@ public partial class MainWindow : Window
         };
         Activated += (_, _) => Vm?.WindowActivated();
         Closed += (_, _) => _popout?.Close();
+        StateChanged += (_, _) => SyncWindowButtons();
+        Banner.SizeChanged += (_, _) => SyncCaptionHeight();
     }
+
+    // ---------------- the banner is the title bar ----------------
+
+    private void OnMinimise(object sender, RoutedEventArgs e) => SystemCommands.MinimizeWindow(this);
+    private void OnCloseWindow(object sender, RoutedEventArgs e) => SystemCommands.CloseWindow(this);
+    private void OnMaximise(object sender, RoutedEventArgs e)
+    {
+        if (WindowState == WindowState.Maximized) SystemCommands.RestoreWindow(this);
+        else SystemCommands.MaximizeWindow(this);
+    }
+
+    private void SyncWindowButtons()
+    {
+        var max = WindowState == WindowState.Maximized;
+        MaxIcon.Glyph = (System.Windows.Media.Geometry)FindResource(max ? "Icon.WinRestore" : "Icon.WinMax");
+        MaxButton.ToolTip = max ? "Restore down" : "Maximise";
+        System.Windows.Automation.AutomationProperties.SetName(MaxButton, max ? "Restore down" : "Maximise");
+    }
+
+    /// <summary>The draggable strip is exactly as tall as the banner (which grows with the text size setting).</summary>
+    private void SyncCaptionHeight()
+    {
+        var zoom = Application.Current.Resources["Zoom"] is double z ? z : 1.0;
+        if (WindowChrome.GetWindowChrome(this) is { } chrome && Banner.ActualHeight > 0)
+            chrome.CaptionHeight = Banner.ActualHeight * zoom;
+    }
+
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        var hwnd = new WindowInteropHelper(this).Handle;
+        HwndSource.FromHwnd(hwnd)?.AddHook(WndProc);
+        // Windows 11: ask for rounded corners like other windows (ignored on Windows 10).
+        try { var round = 2; DwmSetWindowAttribute(hwnd, 33, ref round, sizeof(int)); } catch { }
+    }
+
+    /// <summary>When maximised, fill the screen's working area exactly, so nothing hides behind the taskbar or spills off the edge.</summary>
+    private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        const int WM_GETMINMAXINFO = 0x0024;
+        if (msg != WM_GETMINMAXINFO) return IntPtr.Zero;
+        var monitor = MonitorFromWindow(hwnd, 2 /* nearest */);
+        var info = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
+        if (monitor == IntPtr.Zero || !GetMonitorInfo(monitor, ref info)) return IntPtr.Zero;
+        var mmi = Marshal.PtrToStructure<MINMAXINFO>(lParam);
+        mmi.ptMaxPosition.X = info.rcWork.Left - info.rcMonitor.Left;
+        mmi.ptMaxPosition.Y = info.rcWork.Top - info.rcMonitor.Top;
+        mmi.ptMaxSize.X = info.rcWork.Right - info.rcWork.Left;
+        mmi.ptMaxSize.Y = info.rcWork.Bottom - info.rcWork.Top;
+        Marshal.StructureToPtr(mmi, lParam, false);
+        return IntPtr.Zero; // let WPF apply its own minimum size as well
+    }
+
+    [StructLayout(LayoutKind.Sequential)] private struct POINT { public int X, Y; }
+    [StructLayout(LayoutKind.Sequential)] private struct RECT { public int Left, Top, Right, Bottom; }
+    [StructLayout(LayoutKind.Sequential)] private struct MINMAXINFO { public POINT ptReserved, ptMaxSize, ptMaxPosition, ptMinTrackSize, ptMaxTrackSize; }
+    [StructLayout(LayoutKind.Sequential)] private struct MONITORINFO { public int cbSize; public RECT rcMonitor, rcWork; public uint dwFlags; }
+    [DllImport("user32.dll")] private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint flags);
+    [DllImport("user32.dll")] private static extern bool GetMonitorInfo(IntPtr monitor, ref MONITORINFO info);
+    [DllImport("dwmapi.dll")] private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int value, int size);
 
     private MainViewModel? Vm => DataContext as MainViewModel;
 
     private void OnVmChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (string.IsNullOrEmpty(e.PropertyName) || e.PropertyName == nameof(MainViewModel.PreviewPopout)) SyncPopout();
+        if (string.IsNullOrEmpty(e.PropertyName)) SyncCaptionHeight(); // text size may have changed
     }
 
     /// <summary>"Own window" preview: a small window that stays on top of this one.</summary>

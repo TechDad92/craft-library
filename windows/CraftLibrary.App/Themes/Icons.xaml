@@ -36,4 +36,9 @@
     <Geometry x:Key="Icon.FolderMove">M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M10 13h6M13.5 10.5 16 13l-2.5 2.5</Geometry>
     <Geometry x:Key="Icon.FolderSearch">M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M9.5,13 A2.5,2.5 0 1 0 14.5,13 A2.5,2.5 0 1 0 9.5,13 Z M14 15 l2 2</Geometry>
     <Geometry x:Key="Icon.Logo">M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z M12 11.6c-1.1-1.3-3.3-.6-3 1.1.3 1.4 3 3.1 3 3.1s2.7-1.7 3-3.1c.3-1.7-1.9-2.4-3-1.1z</Geometry>
+    <!-- Window buttons (minimise, maximise, restore), drawn thin like Windows' own. -->
+    <Geometry x:Key="Icon.WinMin">M6 12h12</Geometry>
+    <Geometry x:Key="Icon.WinMax">M6.5,6.5 H17.5 V17.5 H6.5 Z</Geometry>
+    <Geometry x:Key="Icon.WinRestore">M6.5,9 H15 V17.5 H6.5 Z M9,9 V6.5 H17.5 V15 H15</Geometry>
+    <Geometry x:Key="Icon.WinClose">M6.5 6.5l11 11M17.5 6.5l-11 11</Geometry>
 </ResourceDictionary>
