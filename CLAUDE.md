@@ -84,6 +84,12 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
 - Version: only in `<Version>` in `CraftLibrary.App.csproj` (the build scripts read it from there).
 - In a Claude Code cloud session the .NET download site is blocked; install the SDK with `apt-get install dotnet-sdk-10.0`.
 
+## Open source
+- Public repository, licensed **GPL-3.0** (`LICENSE`). Bundled fonts: Figtree, Atkinson, Lexend are SIL OFL; the older
+  OpenDyslexic is CC BY 3.0 + Bitstream Vera licence (licence files in `windows/CraftLibrary.App/Fonts/`).
+- Don't write personal details about the family into the repository (it's public).
+- Donations: GitHub Sponsors (`.github/FUNDING.yml`, README "Support this project").
+
 ## Releasing a new version
 1. Raise `<Version>` in `windows/CraftLibrary.App/CraftLibrary.App.csproj`.
 2. Write `docs/releases/<version>.md` in plain words (sections: Installing, What's new, Fixes, Changed,
