@@ -245,7 +245,7 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
     public List<OptionVm> BtnLabels => Seg(S.BtnLabels, ("both", "Icons and words", s => s.BtnLabels = "both"), ("words", "Words only", s => s.BtnLabels = "words"), ("icons", "Icons only", s => s.BtnLabels = "icons"));
     public List<CheckVm> ToolbarCheck =>
     [
-        new() { Label = "Show the toolbar", Help = "The row of buttons under the top banner: Back, Undo, Duplicates, Settings and more. You can also hide or show it with the button at the top.", On = S.ShowToolbar, Toggle = SetCmd(s => s.ShowToolbar = !s.ShowToolbar) },
+        new() { Label = "Show the toolbar", Help = "The row of buttons under the top banner: Back, Undo, Duplicates, Settings and more. You can also hide it with the small arrow at its right-hand end, and bring it back with the tab at the top of the window.", On = S.ShowToolbar, Toggle = SetCmd(s => s.ShowToolbar = !s.ShowToolbar) },
     ];
 
     public List<CheckVm> ShowWith =>

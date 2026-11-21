@@ -57,38 +57,8 @@
                         </Grid>
                     </StackPanel>
 
-                    <!-- Right: show/hide the toolbar (and Exit focus when the toolbar is hidden), then minimise / maximise / close -->
+                    <!-- Right: minimise / maximise / close (the top bar stays simple: logo, name, search, window buttons) -->
                     <StackPanel x:Name="BannerRight" Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True">
-                            <Button Style="{StaticResource Btn.Tool}" Command="{Binding ToggleFocus}" c:Ui.Active="True" Background="{DynamicResource B.accent}" Foreground="{DynamicResource B.on-accent}"
-                                    BorderBrush="{DynamicResource B.accent-line}" Visibility="{Binding ShowBannerExitFocus, Converter={StaticResource Vis}}" AutomationProperties.Name="Exit focus">
-                                <StackPanel Orientation="Horizontal">
-                                    <c:Icon Glyph="{StaticResource Icon.Focus}" Size="18" Margin="0,0,8,0" />
-                                    <TextBlock Text="Exit focus" />
-                                </StackPanel>
-                            </Button>
-                            <Button Style="{StaticResource Btn.Tool}" Margin="0" Command="{Binding ToggleToolbar}" ToolTip="{Binding ToolbarHint}" AutomationProperties.Name="{Binding ToolbarButtonText}">
-                                <StackPanel Orientation="Horizontal">
-                                    <c:Icon Size="18" Visibility="{DynamicResource V.btnIcon}">
-                                        <c:Icon.Style>
-                                            <Style TargetType="c:Icon">
-                                                <Setter Property="Glyph" Value="{StaticResource Icon.ChevronDown}" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ToolbarVisible}" Value="True">
-                                                        <Setter Property="LayoutTransform">
-                                                            <Setter.Value>
-                                                                <RotateTransform Angle="180" />
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </c:Icon.Style>
-                                    </c:Icon>
-                                    <TextBlock Text="{Binding ToolbarButtonText}" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="14,-12,-24,0" WindowChrome.IsHitTestVisibleInChrome="True">
                             <Button Style="{StaticResource Btn.Caption}" Click="OnMinimise" ToolTip="Minimise" AutomationProperties.Name="Minimise">
                                 <c:Icon Glyph="{StaticResource Icon.WinMin}" Size="20" Thickness="1.2" />
@@ -232,6 +202,14 @@
                                 <TextBlock Text="Settings" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
                             </StackPanel>
                         </Button>
+                        <Button Style="{StaticResource Btn.Icon}" Width="36" Height="36" Command="{Binding ToggleToolbar}" Foreground="{DynamicResource B.muted}" Margin="4,0,0,0"
+                                ToolTip="Hide the toolbar" ToolTipService.IsEnabled="True" AutomationProperties.Name="Hide the toolbar">
+                            <c:Icon Glyph="{StaticResource Icon.ChevronDown}" Size="18">
+                                <c:Icon.LayoutTransform>
+                                    <RotateTransform Angle="180" />
+                                </c:Icon.LayoutTransform>
+                            </c:Icon>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -255,6 +233,25 @@
                     <v:BinView Visibility="{Binding IsBin, Converter={StaticResource Vis}}" />
                 </Grid>
             </DockPanel>
+
+            <!-- ============ When the toolbar is hidden: a slim tab hanging under the top bar, in the middle, to pull it back down ============ -->
+            <Button Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Top" Panel.ZIndex="5" Cursor="Hand" Command="{Binding ToggleToolbar}"
+                    Visibility="{Binding ToolbarVisible, Converter={StaticResource Vis}, ConverterParameter=not}"
+                    ToolTip="Show the toolbar" ToolTipService.IsEnabled="True" AutomationProperties.Name="Show the toolbar" FocusVisualStyle="{StaticResource FocusRing}">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Tab" Width="64" Height="20" Background="{DynamicResource B.chrome}" BorderBrush="{DynamicResource B.divider}"
+                                BorderThickness="1.5,0,1.5,1.5" CornerRadius="0,0,12,12">
+                            <c:Icon Glyph="{StaticResource Icon.ChevronDown}" Size="16" Foreground="{DynamicResource B.chrome-muted}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Tab" Property="Height" Value="24" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
 
             <!-- ============ Settings panel (slides over from the right) ============ -->
             <!-- Below the banner, so the window buttons stay reachable. -->
