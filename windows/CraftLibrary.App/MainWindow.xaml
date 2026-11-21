@@ -190,7 +190,7 @@
                             <ComboBox ItemsSource="{Binding OrderChoices}" SelectedItem="{Binding OrderChoice}" Width="160" MinHeight="36" FontSize="14" AutomationProperties.Name="Order files by" />
                         </StackPanel>
                         <Rectangle Width="1" Height="26" Fill="{DynamicResource B.border}" Margin="6,0,14,0" />
-                        <Button Style="{StaticResource Btn.ToolSeg}" Command="{Binding ToggleFocus}" c:Ui.Active="{Binding Focus}" ToolTip="Hide the folder list and search so you can concentrate on the files" Visibility="{Binding FeatFocus, Converter={StaticResource Vis}}" AutomationProperties.Name="Focus mode">
+                        <Button Style="{StaticResource Btn.ToolSeg}" Command="{Binding ToggleFocus}" c:Ui.Active="{Binding Focus}" ToolTip="Hide the folder list, search and toolbar so you can concentrate on the files. Pull the toolbar back down with the tab at the top." Visibility="{Binding FeatFocus, Converter={StaticResource Vis}}" AutomationProperties.Name="Focus mode">
                             <StackPanel Orientation="Horizontal">
                                 <c:Icon Glyph="{StaticResource Icon.Focus}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
                                 <TextBlock Text="Focus mode" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />

@@ -176,7 +176,7 @@ public sealed partial class MainViewModel
 
     // ---------------- focus mode, menus ----------------
 
-    public ICommand ToggleFocus => Cmd.Of(() => { Focus = !Focus; MenuOpen = false; HiddenMenuOpen = false; ColourOpen = false; RefreshAll(); });
+    public ICommand ToggleFocus => Cmd.Of(() => { Focus = !Focus; _toolbarInFocus = false; MenuOpen = false; HiddenMenuOpen = false; ColourOpen = false; RefreshAll(); });
     public ICommand ToggleMenu => Cmd.Of(() => { MenuOpen = !MenuOpen; HiddenMenuOpen = false; });
     public ICommand ToggleHiddenMenu => Cmd.Of(() => { HiddenMenuOpen = !HiddenMenuOpen; MenuOpen = false; });
     public ICommand OpenSettings => Cmd.Of(() => { MenuOpen = false; SettingsOpen = true; });

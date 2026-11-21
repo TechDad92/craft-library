@@ -142,8 +142,19 @@ public sealed partial class MainViewModel
     public bool ViewIsList => S.View == "list";
     public ICommand ShowAsGrid => Cmd.Of(() => { if (S.View != "grid") { S.View = "grid"; SettingsChanged(); } });
     public ICommand ShowAsList => Cmd.Of(() => { if (S.View != "list") { S.View = "list"; SettingsChanged(); } });
-    public bool ToolbarVisible => S.ShowToolbar;
-    public ICommand ToggleToolbar => Cmd.Of(() => { S.ShowToolbar = !S.ShowToolbar; SettingsChanged(); });
+    /// <summary>
+    /// Focus mode hides the toolbar too. Pulling it down with the tab during Focus mode only shows it for that
+    /// Focus session; her saved "Show the toolbar" choice is used again when Focus mode ends.
+    /// </summary>
+    private bool _toolbarInFocus;
+
+    public bool ToolbarVisible => Focus ? _toolbarInFocus : S.ShowToolbar;
+
+    public ICommand ToggleToolbar => Cmd.Of(() =>
+    {
+        if (Focus) { _toolbarInFocus = !_toolbarInFocus; RefreshAll(); }
+        else { S.ShowToolbar = !S.ShowToolbar; SettingsChanged(); }
+    });
     public ICommand ToggleSettings => Cmd.Of(() => { MenuOpen = false; SettingsOpen = !SettingsOpen; });
     public bool ShowNavTools => !IsSetup;
     public bool ShowViewControls => View == "browse";

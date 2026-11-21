@@ -2,6 +2,9 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.6.2 (21 Nov 2026)
+Focus mode hides the toolbar too (pull it back down with the tab). See [docs/releases/0.6.2.md](docs/releases/0.6.2.md).
+
 ## 0.6.1 (21 Nov 2026)
 Toolbar hide/show moved out of the top bar: a small arrow at the toolbar's end hides it, and a tab under the middle
 of the top bar brings it back. See [docs/releases/0.6.1.md](docs/releases/0.6.1.md).
