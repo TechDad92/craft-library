@@ -158,20 +158,27 @@
                             <TextBlock Text="How big the words are." Style="{StaticResource Help}" />
                             <ItemsControl Style="{StaticResource SegList}" ItemsSource="{Binding Options.TextSize}" />
                             <TextBlock Text="Font" Style="{StaticResource Q}" />
-                            <TextBlock Text="The style of the letters. Each one is written in its own style so you can see it." Style="{StaticResource Help}" />
-                            <ItemsControl ItemsSource="{Binding Fonts}" Focusable="False">
-                                <ItemsControl.ItemTemplate>
+                            <TextBlock Text="The style of the letters. Each font is written in its own style, so you can see what it looks like." Style="{StaticResource Help}" />
+                            <ComboBox ItemsSource="{Binding FontOptions}" SelectedItem="{Binding SelectedFont}" MinHeight="52" FontSize="16" MaxDropDownHeight="380"
+                                      IsTextSearchEnabled="True" TextSearch.TextPath="Label" AutomationProperties.Name="Font"
+                                      ScrollViewer.CanContentScroll="True" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling">
+                                <ComboBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel />
+                                    </ItemsPanelTemplate>
+                                </ComboBox.ItemsPanel>
+                                <ComboBox.ItemTemplate>
                                     <DataTemplate>
-                                        <Button Style="{StaticResource Btn.Row}" c:Ui.Active="{Binding On}" Command="{Binding Pick}" Padding="12,8" Margin="0,0,0,6"
-                                                BorderBrush="{DynamicResource B.border}" BorderThickness="1" c:Ui.Radius="12">
-                                            <StackPanel>
-                                                <TextBlock Text="{Binding Label}" FontFamily="{Binding Family}" FontSize="19" />
-                                                <TextBlock Text="{Binding About}" FontSize="14" FontWeight="Normal" Foreground="{DynamicResource B.muted}" TextWrapping="Wrap" />
-                                            </StackPanel>
-                                        </Button>
+                                        <StackPanel Margin="0,3">
+                                            <TextBlock Text="{Binding Label}" FontFamily="{Binding Family}" FontSize="18" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Text="{Binding About}" FontSize="13" Foreground="{DynamicResource B.muted}" TextWrapping="Wrap"
+                                                       Visibility="{Binding HasAbout, Converter={StaticResource Vis}}" />
+                                        </StackPanel>
                                     </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <TextBlock Style="{StaticResource Help}" Margin="0,10,0,0"
+                                       Text="The first four are made to be easy to read. After them come all the fonts on this computer. Tip: type a letter to jump down the list." />
                         </StackPanel>
 
                         <!-- 4. Colours -->

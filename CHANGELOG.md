@@ -2,6 +2,10 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.4.1 (21 Nov 2026)
+Setup guide: choose from every font on the computer in a drop-down (easy-reading fonts first).
+See [docs/releases/0.4.1.md](docs/releases/0.4.1.md).
+
 ## 0.4.0 (21 Nov 2026)
 First-run setup guide: 8 short screens for the main choices, in plain words, with live changes, Skip, and
 "Run the setup guide again" in Settings. See [docs/releases/0.4.0.md](docs/releases/0.4.0.md).

@@ -97,7 +97,12 @@ public sealed partial class SetupGuideViewModel(MainViewModel main) : Observable
     public ICommand ChooseInbox => main.ChangeInbox;
 
     // ---------------- 3. easy to read ----------------
-    public sealed record FontCard(string Label, string About, FontFamily Family, bool On, ICommand Pick);
+    /// <summary>A font in the drop-down: its name (shown in the font itself) and, for the easy-reading ones, a short note.</summary>
+    public sealed record FontOption(string Id, string Label, string About, FontFamily Family)
+    {
+        public bool HasAbout => About.Length > 0;
+        public override string ToString() => Label;
+    }
 
     private static readonly (string Id, string Label, string About)[] FontInfo =
     [
@@ -107,9 +112,41 @@ public sealed partial class SetupGuideViewModel(MainViewModel main) : Observable
         ("opendyslexic", "OpenDyslexic", "Shaped to help some people with dyslexia."),
     ];
 
-    public List<FontCard> Fonts => FontInfo.Select(f => new FontCard(f.Label, f.About, ThemeService.FontFor(f.Id),
-        Settings.FontSections.All(x => S.Fonts.GetValueOrDefault(x.Key) == f.Id),
-        Cmd.Of(() => { foreach (var (k, _) in Settings.FontSections) S.Fonts[k] = f.Id; main.SettingsChanged(); }))).ToList();
+    private List<FontOption>? _fontOptions;
+    private int _fontOptionsFrom = -1;
+
+    /// <summary>
+    /// Every font: the four easy-reading ones first (with a note each), then every font installed on the computer, A to Z.
+    /// Kept between redraws so the drop-down doesn't reset; rebuilt only when the list of fonts changes.
+    /// </summary>
+    public List<FontOption> FontOptions
+    {
+        get
+        {
+            var all = Options.AvailableFonts();
+            if (_fontOptions != null && _fontOptionsFrom == all.Count) return _fontOptions;
+            var list = FontInfo.Select(f => new FontOption(f.Id, f.Label, f.About, ThemeService.FontFor(f.Id))).ToList();
+            list.AddRange(all.Where(f => f.Group == "installed").Select(f => new FontOption(f.Id, f.Label, "", ThemeService.FontFor(f.Id))));
+            _fontOptionsFrom = all.Count;
+            return _fontOptions = list;
+        }
+    }
+
+    /// <summary>The chosen font, used for every part of the app (Settings can still set each part separately).</summary>
+    public FontOption? SelectedFont
+    {
+        get
+        {
+            var id = S.Fonts.GetValueOrDefault("files", "figtree");
+            return FontOptions.FirstOrDefault(f => f.Id == id) ?? FontOptions[0];
+        }
+        set
+        {
+            if (value == null || Settings.FontSections.All(x => S.Fonts.GetValueOrDefault(x.Key) == value.Id)) return;
+            foreach (var (k, _) in Settings.FontSections) S.Fonts[k] = value.Id;
+            main.SettingsChanged();
+        }
+    }
 
     // ---------------- 6. opening files ----------------
     /// <summary>The craft file types found in her folders (or the common ones, if none are found yet).</summary>
@@ -144,7 +181,7 @@ public sealed partial class SetupGuideViewModel(MainViewModel main) : Observable
         get
         {
             var fontId = S.Fonts.GetValueOrDefault("files", "figtree");
-            var font = FontInfo.FirstOrDefault(f => f.Id == fontId).Label ?? Options.FontLabel(fontId);
+            var font = FontOptions.FirstOrDefault(f => f.Id == fontId)?.Label ?? Options.FontLabel(fontId);
             var size = S.TextSize switch { "s" => "Small", "l" => "Large", _ => "Medium" };
             var changedPrograms = S.OpenWith.Count;
             var comfortOn = ComfortChecks.Where(c => c.On).Select(c => c.Label).ToList();
