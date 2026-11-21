@@ -28,7 +28,6 @@ public partial class MainWindow : Window
         Banner.SizeChanged += (_, _) => { SyncCaptionHeight(); FitSearchBox(); };
         BannerLeft.SizeChanged += (_, _) => FitSearchBox();
         BannerRight.SizeChanged += (_, _) => FitSearchBox();
-        MenuArea.SizeChanged += (_, _) => FitSearchBox();
     }
 
     // ---------------- the banner is the title bar ----------------
@@ -50,7 +49,7 @@ public partial class MainWindow : Window
     }
 
     /// <summary>
-    /// The Menu button and search box sit centred on the window. The search box is 480 wide when there is room,
+    /// The search box sits centred on the window. The search box is 480 wide when there is room,
     /// and narrower when the window is small, so it never pushes into the title or the window buttons.
     /// </summary>
     private void FitSearchBox()
@@ -58,7 +57,7 @@ public partial class MainWindow : Window
         var width = Banner.ActualWidth - Banner.Padding.Left - Banner.Padding.Right;
         if (width <= 0) return;
         var side = Math.Max(BannerLeft.DesiredSize.Width, BannerRight.DesiredSize.Width);
-        var room = width - 2 * side - MenuArea.DesiredSize.Width - 16;
+        var room = width - 2 * side - 16;
         var w = Math.Clamp(room, 160, 480);
         if (Math.Abs(SearchArea.Width - w) > 0.5) SearchArea.Width = w;
     }

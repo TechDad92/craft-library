@@ -123,7 +123,10 @@ public sealed partial class MainViewModel
     public bool ShowNameOn => S.ShowName;
 
     // ---------------- toolbar: quick view controls ----------------
-    public static readonly List<ChoiceVm> OrderChoices =
+    // A property, not a field: WPF can only show lists that are properties (a field left the drop-down empty in 0.5.1).
+    public List<ChoiceVm> OrderChoices => OrderChoiceList;
+
+    private static readonly List<ChoiceVm> OrderChoiceList =
     [
         new() { Value = "name", Label = "Name" }, new() { Value = "added", Label = "Newest first" },
         new() { Value = "type", Label = "File type" }, new() { Value = "size", Label = "Largest first" },
@@ -131,7 +134,7 @@ public sealed partial class MainViewModel
 
     public ChoiceVm OrderChoice
     {
-        get => OrderChoices.FirstOrDefault(c => c.Value == S.Order) ?? OrderChoices[0];
+        get => OrderChoiceList.FirstOrDefault(c => c.Value == S.Order) ?? OrderChoiceList[0];
         set { if (value != null && value.Value != S.Order) { S.Order = value.Value; SettingsChanged(); } }
     }
 
@@ -139,7 +142,8 @@ public sealed partial class MainViewModel
     public bool ViewIsList => S.View == "list";
     public ICommand ShowAsGrid => Cmd.Of(() => { if (S.View != "grid") { S.View = "grid"; SettingsChanged(); } });
     public ICommand ShowAsList => Cmd.Of(() => { if (S.View != "list") { S.View = "list"; SettingsChanged(); } });
-    public bool ShowToolbar => !IsSetup;
+    public bool ShowToolbar => true; // always: it holds the Menu
+    public bool ShowNavTools => !IsSetup;
     public bool ShowViewControls => View == "browse";
     public bool ShowTypeOn => S.ShowType;
 
