@@ -125,6 +125,32 @@ public sealed class SafeFilesTests : IDisposable
     }
 
     [Fact]
+    public void Copy_keeps_the_original_and_never_overwrites()
+    {
+        t.File("craft/cuts/flower.png", "existing");
+        var src = Path.Combine(papers, "flower.png");
+        var dest = safe.Copy(src, cuts);
+        Assert.Equal(Path.Combine(cuts, "flower (2).png"), dest);
+        Assert.Equal("aa", File.ReadAllText(dest));
+        Assert.Equal("aa", File.ReadAllText(src));
+        Assert.Equal("existing", File.ReadAllText(Path.Combine(cuts, "flower.png")));
+    }
+
+    [Fact]
+    public void Copy_into_its_own_folder_gets_a_new_name()
+    {
+        var dest = safe.Copy(Path.Combine(papers, "flower.png"), papers);
+        Assert.Equal(Path.Combine(papers, "flower (2).png"), dest);
+    }
+
+    [Fact]
+    public void Copy_outside_chosen_folders_is_refused()
+    {
+        Assert.Throws<FriendlyException>(() => safe.Copy(Path.Combine(papers, "flower.png"), outside));
+        Assert.Empty(Directory.GetFiles(outside));
+    }
+
+    [Fact]
     public void Unique_path_counts_up()
     {
         t.File("craft/cuts/a.svg"); t.File("craft/cuts/a (2).svg");

@@ -330,6 +330,17 @@ public sealed partial class MainViewModel
         catch (Exception ex) { ShowMessage(ex.Message); }
     });
 
+    /// <summary>Opens one of her folders in File Explorer.</summary>
+    public void OpenFolderInExplorer(string folder)
+    {
+        try
+        {
+            _safe.AssertAllowed(folder);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("explorer.exe") { ArgumentList = { folder }, UseShellExecute = false })?.Dispose();
+        }
+        catch (Exception ex) { ShowMessage(ex is FriendlyException ? ex.Message : "File Explorer couldn’t open that folder."); }
+    }
+
     public ICommand OpenWindowsBin => Cmd.Of(WindowsPlatform.OpenRecycleBin);
 
     // ---------------- Sort later and notes ----------------
@@ -436,21 +447,31 @@ public sealed partial class MainViewModel
     [CommunityToolkit.Mvvm.ComponentModel.ObservableProperty] private bool _moveOpen;
     [CommunityToolkit.Mvvm.ComponentModel.ObservableProperty] private string? _moveTarget;
 
-    public ICommand OpenMove => Cmd.Of(() =>
+    /// <summary>The folder picker is shared: true when it is choosing where to put a copy rather than where to move.</summary>
+    private bool _pickerCopies;
+
+    public ICommand OpenMove => Cmd.Of(() => OpenPicker(copy: false));
+    public ICommand OpenCopyTo => Cmd.Of(() => OpenPicker(copy: true));
+
+    private void OpenPicker(bool copy)
     {
-        if (Selected == null || !FeatMove) return;
+        if (Selected == null || (!copy && !FeatMove)) return;
+        _pickerCopies = copy;
         FileOptionsOpen = false;
         MoveTarget = null;
         MoveOpen = true;
         Renaming = false;
         OnPropertyChanged(nameof(MoveRows));
         OnPropertyChanged(nameof(MoveTitle));
+        OnPropertyChanged(nameof(MoveIntro));
         OnPropertyChanged(nameof(MoveButtonText));
-    });
+    }
 
     public ICommand CloseMove => Cmd.Of(() => MoveOpen = false);
-    public string MoveTitle => Selected is { } s ? "Move “" + s.FullName + "” to…" : "";
-    public string MoveButtonText => MoveTarget != null && FolderById(MoveTarget) is { } f ? "Move to " + f.Label : "Move here";
+    public string MoveTitle => Selected is { } s ? (_pickerCopies ? "Copy “" : "Move “") + s.FullName + "” to…" : "";
+    public string MoveIntro => _pickerCopies ? "Pick the folder to put a copy in. The original stays where it is." : "Pick the folder this file belongs in.";
+    public string MoveButtonText => MoveTarget != null && FolderById(MoveTarget) is { } f
+        ? (_pickerCopies ? "Copy to " : "Move to ") + f.Label : (_pickerCopies ? "Copy here" : "Move here");
     public bool CanMoveHere => MoveTarget != null;
 
     public List<MoveRowVm> MoveRows
@@ -462,7 +483,8 @@ public sealed partial class MainViewModel
             var rows = new List<MoveRowVm>();
             MoveRowVm Row(FolderDef f, int depth, string? label = null)
             {
-                var cur = string.Equals(it.Folder, f.Id, StringComparison.OrdinalIgnoreCase);
+                // Moving to the folder it is already in does nothing; copying there is fine (the copy gets " (2)").
+                var cur = !_pickerCopies && string.Equals(it.Folder, f.Id, StringComparison.OrdinalIgnoreCase);
                 var id = f.Id;
                 return new MoveRowVm
                 {
@@ -493,7 +515,71 @@ public sealed partial class MainViewModel
         }
     }
 
-    public ICommand MoveHere => Cmd.Of(() => { if (MoveTarget != null && Selected != null) { MoveOpen = false; _ = MoveAsync(Selected, MoveTarget); } });
+    public ICommand MoveHere => Cmd.Of(() =>
+    {
+        if (MoveTarget == null || Selected == null) return;
+        MoveOpen = false;
+        if (_pickerCopies) _ = CopyAsync(Selected, MoveTarget);
+        else _ = MoveAsync(Selected, MoveTarget);
+    });
+
+    // ---------------- copying ----------------
+
+    /// <summary>Puts the file on the Windows clipboard, so it can be pasted into a folder, an email or another program.</summary>
+    public void CopyToClipboard(FileItemVm it)
+    {
+        try
+        {
+            _safe.AssertAllowed(it.Path);
+            var list = new System.Collections.Specialized.StringCollection { it.Path };
+            System.Windows.Clipboard.SetFileDropList(list);
+            ShowMessage("Copied “" + it.FullName + "”. You can paste it into a folder in File Explorer, an email or another program.");
+        }
+        catch (FriendlyException ex) { ShowMessage(ex.Message); }
+        catch (Exception) { ShowMessage("Windows didn’t allow that copy just now. Please try again."); }
+    }
+
+    public async Task CopyAsync(FileItemVm it, string to)
+    {
+        var target = FolderById(to);
+        var destDir = DirForFolder(to);
+        if (_busy || target == null || string.IsNullOrEmpty(destDir)) return;
+        _busy = true;
+        ShowMessage("Copying “" + it.FullName + "” to " + target.Label + "…");
+        var src = it.Path;
+        var dest = await Do(() => _safe.Copy(src, destDir));
+        _busy = false;
+        if (dest == null) return;
+        var copy = AddItemFor(dest);
+        var named = PathRules.SplitName(dest).Base != it.Name ? ". There was already a file with that name, so the copy is called “" + Path.GetFileName(dest) + "”" : "";
+        Record(new HistoryEntry { Type = "copy", Path = dest, FromPath = src, Msg = "Copied “" + it.FullName + "” to " + target.Label + named });
+        RecountAndRefresh();
+        if (copy != null && string.Equals(copy.Folder, Folder, StringComparison.OrdinalIgnoreCase)) Selected = copy;
+    }
+
+    /// <summary>Adds a file that has just appeared (a new copy) without waiting for the next look at the folders.</summary>
+    private FileItemVm? AddItemFor(string path)
+    {
+        try
+        {
+            var info = new FileInfo(path);
+            var (b, ext) = PathRules.SplitName(path);
+            var entry = new FileEntry(path, info.DirectoryName!, b, ext.ToLowerInvariant(), info.Length, info.CreationTimeUtc, info.LastWriteTimeUtc);
+            var vm = new FileItemVm(entry, FolderForDir(info.DirectoryName!)) { BadgesOn = S.ShowBadges && S.Shows("dupes") };
+            vm.MetaLine = MetaFor(vm);
+            _items = _items.Append(vm).ToList();
+            _byPath[path] = vm;
+            return vm;
+        }
+        catch (IOException) { return null; }
+    }
+
+    private void RemoveItem(string path)
+    {
+        _items = _items.Where(i => !string.Equals(i.Path, path, StringComparison.OrdinalIgnoreCase)).ToList();
+        _byPath.Remove(path);
+        Data.FileMeta.Remove(path);
+    }
 
     public async Task MoveAsync(FileItemVm it, string to)
     {
@@ -746,6 +832,14 @@ public sealed partial class MainViewModel
                     e.Entries = again;
                     return null;
                 }
+                case "copy":
+                {
+                    // Undoing a copy sends the copy (never the original) to the Recycle Bin.
+                    var removed = await Task.Run(() => _remover.Remove(e.Path));
+                    RemoveItem(e.Path);
+                    e.Entries = [removed];
+                    return null;
+                }
                 case "install":
                 {
                     await Task.Run(() => FontService.Uninstall(e.Path));
@@ -836,6 +930,13 @@ public sealed partial class MainViewModel
                     e.Entries = back.Select(b => { b.Entry.RemovedPath = b.Back; return b.Entry; }).ToList();
                     _lastScanSig = "";
                     await RescanAsync();
+                    return null;
+                }
+                case "copy":
+                {
+                    var dest = await Task.Run(() => _safe.Copy(e.FromPath, Path.GetDirectoryName(e.Path)!));
+                    AddItemFor(dest);
+                    e.Path = dest;
                     return null;
                 }
                 case "install":

@@ -133,6 +133,38 @@ public sealed class SafeFiles
         File.Delete(src);
     }
 
+    /// <summary>
+    /// Copies a file into <paramref name="destDir"/> and returns the copy's path. Never overwrites: a taken name gets
+    /// " (2)". The copy is checked to be the same size as the original, and removed again if it isn't.
+    /// </summary>
+    public string Copy(string src, string destDir)
+    {
+        AssertAllowed(src);
+        AssertAllowed(destDir);
+        if (!File.Exists(src)) throw new FriendlyException("That file isn’t there any more. It may have been moved, or the drive unplugged.");
+        if (!Directory.Exists(destDir)) throw new FriendlyException("That folder isn’t there any more. It may have been moved, or the drive unplugged.");
+        var (b, ext) = PathRules.SplitName(src);
+        for (var attempt = 0; ; attempt++)
+        {
+            var dest = UniquePath(destDir, b, ext);
+            if (!PathRules.Same(Path.GetDirectoryName(dest)!, destDir)) throw new FriendlyException("That name isn’t allowed, so the file was not copied.");
+            try
+            {
+                File.Copy(src, dest, overwrite: false);
+            }
+            catch (IOException) when (attempt < 3 && File.Exists(dest))
+            {
+                continue; // another file took that name in the meantime: try the next free name
+            }
+            if (new FileInfo(src).Length != new FileInfo(dest).Length)
+            {
+                try { File.Delete(dest); } catch { }
+                throw new FriendlyException("The copy did not match the original, so it was removed again.");
+            }
+            return dest;
+        }
+    }
+
     /// <summary>Renames a file in its own folder, keeping its extension. Returns the new full path.</summary>
     public string Rename(string src, string newBase)
     {

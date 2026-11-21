@@ -4,7 +4,7 @@ A Windows desktop app that helps the user's mum organise thousands of craft file
 patterned papers (JPG/PNG/PSD), SVG/DXF/EPS/Silhouette cut files, Word documents that hold a paper
 image, PDFs, zip bundles and fonts. It's a file manager first, with sorting tools added on.
 
-Current version: **0.3.3**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
+Current version: **0.3.4**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
 The Electron version is in `legacy-electron/` for reference only. Do not change it.
 
 ## Who it's for: these rules matter
@@ -56,6 +56,9 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
   - Toolbar (row under the banner): Back/Forward (place history `_back`/`_forward`; call `Remember()` before going
     somewhere new), Undo/Redo (`_redo`; `Record()` clears it unless it is a redo), Grid/List, Order by, then
     Hidden / Exit focus / today's progress.
+  - Right-click menus are built in code each time (`FilesView.xaml.cs`: `FileMenu`, `FolderMenu`), so they only
+    show what applies and respect the feature switches. Styled by the implicit `ContextMenu`/`MenuItem` styles.
+    Copying uses `SafeFiles.Copy` (never overwrites); undoing a copy sends only the copy to the Recycle Bin.
   - **Never use `Effect` (DropShadowEffect etc.)**: it renders text as a bitmap, which blurs at Small/Large text
     size (the root is scaled). Use `Controls/ShadowBorder` for shadows.
   - `App.xaml.cs`: single instance, unexpected errors go to `problems.log` and the app keeps going;
@@ -97,6 +100,9 @@ portable-drive "Removed files" folder, speed on a low-end PC.
 - Fixed: capitals-only renames; Sort mode never moved real files (it had no screen anyway).
 - New: keyboard (arrows, Enter, F2, Delete, Ctrl+Z, Ctrl+F, Esc); bigger preview picture; problem log.
 - Settings start fresh (the Electron version kept them in its own browser storage).
+
+## Plans
+- `docs/plans/first-run-wizard.md`: the first-run setup guide (planned, not built; has open questions).
 
 ## Next step
 Mum is trying the app and will have a list of changes. Work through her feedback, keeping the rules above.
