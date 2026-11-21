@@ -108,6 +108,7 @@ public partial class FilesView : UserControl
         if (vm.FeatLater) m.Items.Add(Item(f.LaterLabel, "Clock", () => vm.ToggleLater.Execute(null)));
         if (vm.FeatExplorer) m.Items.Add(Item("Show in File Explorer", "FolderSearch", () => vm.ShowInExplorer.Execute(null)));
         if (f.FontNotInstalled) m.Items.Add(Item("Install font", "Download", () => vm.InstallFont.Execute(null)));
+        if (f.Ext.Length > 0) m.Items.Add(Item("Hide all ." + f.Ext + " files", "EyeOff", () => vm.HideKind(f.Ext)));
         if (vm.FeatRecycle)
         {
             m.Items.Add(new Separator());

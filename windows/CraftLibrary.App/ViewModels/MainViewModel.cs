@@ -134,7 +134,7 @@ public sealed partial class MainViewModel : ObservableObject
         ApplyTheme();
         foreach (var it in _items) { it.MetaLine = MetaFor(it); it.BadgesOn = S.ShowBadges && S.Shows("dupes"); }
         SaveSoon();
-        RefreshAll();
+        RecountAndRefresh(); // counts change when kinds of files are hidden or shown
     }
 
     // ---------------- the clock: fading messages ----------------
@@ -302,13 +302,13 @@ public sealed partial class MainViewModel : ObservableObject
 
     private void RecountDuplicates()
     {
-        var n = _items.Where(i => i.Dup.Length > 0).GroupBy(i => i.Dup).ToDictionary(g => g.Key, g => g.Count());
+        var n = Shown.Where(i => i.Dup.Length > 0).GroupBy(i => i.Dup).ToDictionary(g => g.Key, g => g.Count());
         foreach (var it in _items) it.DupCount = it.Dup.Length > 0 ? n.GetValueOrDefault(it.Dup) : 0;
     }
 
     private void RecountAndRefresh()
     {
-        _counts = _items.GroupBy(i => i.Folder, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
+        _counts = Shown.GroupBy(i => i.Folder, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
         RecountDuplicates();
         RefreshAll();
     }

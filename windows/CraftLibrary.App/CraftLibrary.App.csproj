@@ -19,7 +19,7 @@
     <Company>Craft Library</Company>
     <Copyright>Craft Library</Copyright>
     <!-- The one place the version number lives. The installer reads it from the built program. -->
-    <Version>0.4.2</Version>
+    <Version>0.5.0</Version>
     <!-- One self-contained file: nothing else needs installing on the computer. -->
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>

@@ -177,7 +177,7 @@ public sealed partial class MainViewModel
 
     private List<FileItemVm> ComputeVisible()
     {
-        IEnumerable<FileItemVm> list = _items;
+        IEnumerable<FileItemVm> list = Shown;
         var q = Q;
         if (q.Length > 0) list = list.Where(i => i.FullName.Contains(q, StringComparison.CurrentCultureIgnoreCase));
         else if (Folder == LaterPile) list = list.Where(i => i.Later);
@@ -221,7 +221,7 @@ public sealed partial class MainViewModel
     public void RefreshAll()
     {
         _visCache = null;
-        if (Selected != null && !_byPath.ContainsKey(Selected.Path)) Selected = null;
+        if (Selected != null && (!_byPath.ContainsKey(Selected.Path) || S.IsHiddenExt(Selected.Ext))) Selected = null;
         RebuildRows();
         BuildSideRows();
         if (SettingsOpen || GuideOpen) { SettingsVm.Refresh(); Guide.Refresh(); }
@@ -255,7 +255,7 @@ public sealed partial class MainViewModel
     // ---------------- banner ----------------
     public bool ShowSearch => !Focus && S.Shows("search") && !IsSetup;
     public bool ShowHome => !IsSetup && View != "browse";
-    public int DupGroupCount => _items.Where(i => i.Dup.Length > 0).GroupBy(i => i.Dup).Count(g => g.Count() > 1);
+    public int DupGroupCount => Shown.Where(i => i.Dup.Length > 0).GroupBy(i => i.Dup).Count(g => g.Count() > 1);
     public bool HasDupGroups => DupGroupCount > 0;
     public bool CanUndo => History.Count > 0;
     public string UndoHint => History.Count > 0 ? History[^1].Msg : "Nothing to undo yet";
@@ -293,7 +293,7 @@ public sealed partial class MainViewModel
     public bool LaterActive => Q.Length == 0 && View == "browse" && Folder == LaterPile;
     public bool BinActive => View == "bin";
     public string InboxCount => _counts.GetValueOrDefault(Unsorted).ToString();
-    public string LaterCount => _items.Count(i => i.Later).ToString();
+    public string LaterCount => Shown.Count(i => i.Later).ToString();
     public string InboxPathShort => Data.InboxPath;
     public string BinCount => Data.Removed.Count.ToString();
     public List<string> OfflineNotes => Data.Locations.Where(l => _unavailable.Contains(l.Key))
@@ -482,6 +482,18 @@ public sealed partial class MainViewModel
     /// <summary>Fonts from her library that are installed, so they can be chosen in Settings.</summary>
     public IEnumerable<FileItemVm> InstalledLibraryFonts() => _items.Where(i => i.IsFont && i.Installed);
 
+    /// <summary>
+    /// Her files minus the kinds she has chosen to hide (Settings › Layout › Hide kinds of files). Everything she sees
+    /// (the file area, counts, search, Duplicates) uses this; the hidden files themselves are never touched.
+    /// </summary>
+    private IEnumerable<FileItemVm> Shown => S.HiddenExts.Count == 0 ? _items : _items.Where(i => !S.IsHiddenExt(i.Ext));
+
+    public int HiddenFileCount => S.HiddenExts.Count == 0 ? 0 : _items.Count(i => S.IsHiddenExt(i.Ext));
+
+    /// <summary>How many files of each kind there are (including hidden ones), for the "Hide kinds of files" lists.</summary>
+    public Dictionary<string, int> CountByExt() => _items.Where(i => i.Ext.Length > 0)
+        .GroupBy(i => i.Ext.ToLowerInvariant()).ToDictionary(g => g.Key, g => g.Count());
+
     public IEnumerable<string> AllExtensions() => _items.Select(i => i.Ext).Where(e => e.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase);
 
     public string TileSelLabel => SelectedTile?.Label ?? "";
@@ -500,7 +512,7 @@ public sealed partial class MainViewModel
         get
         {
             if (View != "dupes") return [];
-            return _items.Where(i => i.Dup.Length > 0).GroupBy(i => i.Dup).Where(g => g.Count() > 1).Select(g =>
+            return Shown.Where(i => i.Dup.Length > 0).GroupBy(i => i.Dup).Where(g => g.Count() > 1).Select(g =>
             {
                 var copies = g.OrderBy(i => FolderPathOf(i), NameOrder.Instance).ToList();
                 var key = g.Key;
@@ -523,7 +535,7 @@ public sealed partial class MainViewModel
     {
         get
         {
-            var groups = _items.Where(i => i.Dup.Length > 0).GroupBy(i => i.Dup).Where(g => g.Count() > 1).ToList();
+            var groups = Shown.Where(i => i.Dup.Length > 0).GroupBy(i => i.Dup).Where(g => g.Count() > 1).ToList();
             if (groups.Count == 0) return "Nothing to clean up";
             var total = groups.Sum(g => g.Count());
             return groups.Count + (groups.Count == 1 ? " group · " : " groups · ") + total + " copies · " + (total - groups.Count) + " could go to the Recycle Bin";

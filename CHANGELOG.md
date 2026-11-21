@@ -2,6 +2,10 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.5.0 (21 Nov 2026)
+Hide kinds of files (Settings › Layout, right-click, and a new setup guide screen, now 9 screens). Hidden files
+stay in their folders, just out of sight. See [docs/releases/0.5.0.md](docs/releases/0.5.0.md).
+
 ## 0.4.2 (21 Nov 2026)
 "Open files with": craft file types first; other kinds tucked under "Change how other kinds of files open".
 The setup guide lists only craft types found in her folder. See [docs/releases/0.4.2.md](docs/releases/0.4.2.md).

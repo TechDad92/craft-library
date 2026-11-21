@@ -31,6 +31,10 @@ public sealed class Settings
     public bool ShowDate { get; set; }
     public string Order { get; set; } = "name";              // name | added | type | size
     public string BtnLabels { get; set; } = "both";          // both | words | icons
+    /// <summary>File endings she has chosen not to see (e.g. "xlsx"). The files are never touched, just not shown.</summary>
+    public List<string> HiddenExts { get; set; } = [];
+
+    public bool IsHiddenExt(string ext) => HiddenExts.Contains((ext ?? "").ToLowerInvariant());
 
     // Comfort & focus (all off to start with)
     public bool HighContrast { get; set; }
@@ -80,6 +84,7 @@ public sealed class Settings
         Features ??= DefaultFeatures();
         foreach (var (k, _) in FeatureList) Features.TryAdd(k, "show");
         OpenWith = new Dictionary<string, string>(OpenWith ?? [], StringComparer.OrdinalIgnoreCase);
+        HiddenExts = (HiddenExts ?? []).Where(e => !string.IsNullOrWhiteSpace(e)).Select(e => e.Trim().TrimStart('.').ToLowerInvariant()).Distinct().ToList();
     }
 }
 
@@ -123,7 +128,7 @@ public sealed class AppData
     /// then it counts as done when a craft folder was already chosen, so existing users never see it unasked.
     /// </summary>
     public bool? SetupGuideDone { get; set; }
-    /// <summary>The guide's screen (1–8) to reopen at, if the app was closed partway through.</summary>
+    /// <summary>The guide's screen (1–9) to reopen at, if the app was closed partway through.</summary>
     public int SetupGuideStep { get; set; } = 1;
     /// <summary>Count of files moved per day ("yyyy-MM-dd"), for "Show today's progress".</summary>
     public Dictionary<string, int> SortedPerDay { get; set; } = [];
@@ -177,6 +182,6 @@ public sealed class AppData
         Expanded = new(Expanded ?? [], StringComparer.OrdinalIgnoreCase);
         SortedPerDay ??= [];
         SetupGuideDone ??= Locations.Count > 0;
-        SetupGuideStep = Math.Clamp(SetupGuideStep, 1, 8);
+        SetupGuideStep = Math.Clamp(SetupGuideStep, 1, 9);
     }
 }
