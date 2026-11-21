@@ -498,6 +498,62 @@
         </Setter>
     </Style>
 
+    <!-- ===================== Right-click menus ===================== -->
+    <Style TargetType="ContextMenu">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="HasDropShadow" Value="True" />
+        <Setter Property="Foreground" Value="{DynamicResource B.text}" />
+        <Setter Property="FontFamily" Value="{DynamicResource F.popups}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContextMenu">
+                    <c:ShadowBorder Style="{StaticResource PopupCard}" MinWidth="260" Margin="10,4,14,22">
+                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                    </c:ShadowBorder>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="MenuItem">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Foreground" Value="{DynamicResource B.text}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Border x:Name="Bd" Background="Transparent" CornerRadius="8" Padding="10,0" MinHeight="40" SnapsToDevicePixels="True">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{TemplateBinding InputGestureText}" FontSize="12" Foreground="{DynamicResource B.muted}" VerticalAlignment="Center" Margin="20,0,2,0" />
+                            <ContentPresenter DockPanel.Dock="Left" ContentSource="Icon" Width="18" Height="18" Margin="2,0,12,0" VerticalAlignment="Center" />
+                            <ContentPresenter ContentSource="Header" VerticalAlignment="Center" RecognizesAccessKey="False" />
+                        </DockPanel>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource B.accent-soft}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.45" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="Separator">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Separator">
+                    <Rectangle Height="1" Fill="{DynamicResource B.line}" Margin="8,5" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- A list that draws only what is on screen (fast with thousands of files), with smooth scrolling. -->
     <Style x:Key="FastList" TargetType="ListBox">
         <Setter Property="Background" Value="Transparent" />

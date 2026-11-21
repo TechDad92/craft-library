@@ -47,7 +47,7 @@
         <!-- ===== A file tile in the grid ===== -->
         <DataTemplate x:Key="FileTile" DataType="{x:Type vm:FileItemVm}">
             <Border x:Name="Card" Margin="0,0,0,0" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource B.border}" Background="{DynamicResource B.panel}"
-                    Cursor="Hand" MouseLeftButtonDown="OnTileDown" Tag="{Binding}" ToolTip="{Binding FullName}" ToolTipService.InitialShowDelay="900">
+                    Cursor="Hand" MouseLeftButtonDown="OnTileDown" ContextMenuOpening="OnTileMenu" Tag="{Binding}" ToolTip="{Binding FullName}" ToolTipService.InitialShowDelay="900">
                 <DockPanel>
                     <Border DockPanel.Dock="Top" x:Name="Box" Height="{Binding DataContext.ThumbHeight, RelativeSource={RelativeSource AncestorType=ListBox}}"
                             CornerRadius="11,11,0,0" Background="#FFFFFF">
@@ -78,7 +78,7 @@
         <!-- ===== A folder tile in the grid ===== -->
         <DataTemplate x:Key="FolderTile" DataType="{x:Type vm:FolderTileVm}">
             <Border x:Name="Card" CornerRadius="12" BorderThickness="1" BorderBrush="{DynamicResource B.border}" Background="{DynamicResource B.panel}"
-                    Cursor="Hand" MouseLeftButtonDown="OnTileDown" Tag="{Binding}" ToolTip="Double-click to open">
+                    Cursor="Hand" MouseLeftButtonDown="OnTileDown" ContextMenuOpening="OnTileMenu" Tag="{Binding}" ToolTip="Double-click to open">
                 <DockPanel>
                     <Border DockPanel.Dock="Top" Height="{Binding DataContext.ThumbHeight, RelativeSource={RelativeSource AncestorType=ListBox}}" CornerRadius="11,11,0,0" Background="{DynamicResource B.subtle}">
                         <c:Icon Glyph="{StaticResource Icon.Folder}" Size="72" Thickness="1.2" Fill="{Binding Fill, Converter={StaticResource Hex}}" Stroke="{Binding Line, Converter={StaticResource Hex}}"
@@ -216,7 +216,7 @@
             <!-- List view: one file per row -->
             <DataTemplate DataType="{x:Type vm:FileItemVm}">
                 <Border x:Name="Row" Margin="24,0,24,6" CornerRadius="10" Background="{DynamicResource B.panel}" BorderBrush="{DynamicResource B.border}" BorderThickness="1" Padding="8"
-                        Cursor="Hand" MouseLeftButtonDown="OnTileDown" Tag="{Binding}">
+                        Cursor="Hand" MouseLeftButtonDown="OnTileDown" ContextMenuOpening="OnTileMenu" Tag="{Binding}">
                     <DockPanel>
                         <Border DockPanel.Dock="Left" Width="64" Height="48" CornerRadius="8" Background="#FFFFFF" ClipToBounds="True" Margin="0,0,14,0">
                             <Grid>
@@ -248,7 +248,7 @@
 
             <DataTemplate DataType="{x:Type vm:FolderTileVm}">
                 <Border x:Name="Row" Margin="24,0,24,6" CornerRadius="10" Background="{DynamicResource B.panel}" BorderBrush="{DynamicResource B.border}" BorderThickness="1" Padding="8"
-                        Cursor="Hand" MouseLeftButtonDown="OnTileDown" Tag="{Binding}">
+                        Cursor="Hand" MouseLeftButtonDown="OnTileDown" ContextMenuOpening="OnTileMenu" Tag="{Binding}">
                     <DockPanel>
                         <Border DockPanel.Dock="Left" Width="64" Height="48" CornerRadius="8" Background="{DynamicResource B.subtle}" Margin="0,0,14,0">
                             <c:Icon Glyph="{StaticResource Icon.Folder}" Size="30" Thickness="1.5" Fill="{Binding Fill, Converter={StaticResource Hex}}" Stroke="{Binding Line, Converter={StaticResource Hex}}" HorizontalAlignment="Center" VerticalAlignment="Center" />

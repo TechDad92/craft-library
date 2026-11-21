@@ -57,6 +57,78 @@ public partial class FilesView : UserControl
         e.Handled = true;
     }
 
+    // ---------------- right-click menus ----------------
+
+    /// <summary>Right-click on a file or folder: select it, then show a menu of what can be done with it.</summary>
+    private void OnTileMenu(object sender, ContextMenuEventArgs e)
+    {
+        if (_vm == null || sender is not FrameworkElement fe) return;
+        e.Handled = true; // the menu is built here instead
+        List.Focus();
+        var menu = fe.Tag switch
+        {
+            FileItemVm f => FileMenu(f),
+            FolderTileVm t => FolderMenu(t),
+            _ => null,
+        };
+        if (menu == null) return;
+        menu.PlacementTarget = fe;
+        menu.Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint;
+        menu.IsOpen = true;
+    }
+
+    private static MenuItem Item(string header, string icon, Action run, string keys = "")
+    {
+        var mi = new MenuItem
+        {
+            Header = header,
+            InputGestureText = keys,
+            Icon = new Controls.Icon { Glyph = (Geometry)Application.Current.FindResource("Icon." + icon), Size = 18 },
+        };
+        mi.Click += (_, _) => run();
+        return mi;
+    }
+
+    private ContextMenu FileMenu(FileItemVm f)
+    {
+        var vm = _vm!;
+        vm.Select(f);
+        var m = new ContextMenu();
+        if (vm.FeatOpen)
+        {
+            m.Items.Add(Item(vm.OpenLabel, "PopOut", () => vm.OpenFile(f, null), "Enter"));
+            m.Items.Add(Item("Open with…", "Grid4", () => vm.ChooseOtherProgram.Execute(null)));
+            m.Items.Add(new Separator());
+        }
+        m.Items.Add(Item("Copy", "Copy", () => vm.CopyToClipboard(f), "Ctrl+C"));
+        m.Items.Add(Item("Copy to…", "Copy", () => vm.OpenCopyTo.Execute(null)));
+        if (vm.FeatMove) m.Items.Add(Item("Move to…", "FolderMove", () => vm.OpenMove.Execute(null)));
+        if (vm.FeatRename) m.Items.Add(Item("Rename", "Pencil", () => vm.StartRename.Execute(null), "F2"));
+        m.Items.Add(new Separator());
+        if (vm.FeatLater) m.Items.Add(Item(f.LaterLabel, "Clock", () => vm.ToggleLater.Execute(null)));
+        if (vm.FeatExplorer) m.Items.Add(Item("Show in File Explorer", "FolderSearch", () => vm.ShowInExplorer.Execute(null)));
+        if (f.FontNotInstalled) m.Items.Add(Item("Install font", "Download", () => vm.InstallFont.Execute(null)));
+        if (vm.FeatRecycle)
+        {
+            m.Items.Add(new Separator());
+            m.Items.Add(Item("Send to Recycle Bin", "Trash", () => vm.RecycleSelected.Execute(null), "Delete"));
+        }
+        // Tidy up: no separator at the very end, and never two in a row.
+        for (var i = m.Items.Count - 1; i >= 0; i--)
+            if (m.Items[i] is Separator && (i == m.Items.Count - 1 || i == 0 || m.Items[i - 1] is Separator)) m.Items.RemoveAt(i);
+        return m;
+    }
+
+    private ContextMenu FolderMenu(FolderTileVm t)
+    {
+        var vm = _vm!;
+        vm.SelectTile(t);
+        var m = new ContextMenu();
+        m.Items.Add(Item("Open", "Folder", () => vm.SetFolder(t.Id), "Enter"));
+        if (vm.FeatExplorer) m.Items.Add(Item("Show in File Explorer", "FolderSearch", () => vm.OpenFolderInExplorer(t.Id)));
+        return m;
+    }
+
     /// <summary>Arrow keys move between files, Enter opens, F2 renames, Delete removes.</summary>
     private void OnKey(object sender, KeyEventArgs e)
     {
@@ -72,6 +144,20 @@ public partial class FilesView : UserControl
                 else if (_vm.Selected != null) _vm.OpenFile(_vm.Selected, null);
                 break;
             case Key.F2: _vm.StartRename.Execute(null); break;
+            case Key.C when (Keyboard.Modifiers & ModifierKeys.Control) != 0:
+                if (_vm.Selected != null) _vm.CopyToClipboard(_vm.Selected);
+                break;
+            case Key.Apps:
+            case Key.F10 when (Keyboard.Modifiers & ModifierKeys.Shift) != 0:
+                // The keyboard's menu key (or Shift+F10) opens the right-click menu for the selected file.
+                if (_vm.Selected is { } sel)
+                {
+                    var menu = FileMenu(sel);
+                    menu.PlacementTarget = List;
+                    menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Center;
+                    menu.IsOpen = true;
+                }
+                break;
             case Key.Delete: _vm.RecycleSelected.Execute(null); break;
             default: return;
         }

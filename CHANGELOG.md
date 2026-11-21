@@ -2,6 +2,10 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.3.4 (21 Nov 2026)
+Right-click menus on files (open, copy, copy to, move, rename, sort later, show in File Explorer, install font,
+Recycle Bin) and folders. See [docs/releases/0.3.4.md](docs/releases/0.3.4.md).
+
 ## 0.3.3 (21 Nov 2026)
 New toolbar: Back/Forward, Undo/Redo, Grid/List and Order by. Fixed blurry text in Settings, menus and pop-ups at
 Large/Small text size. See [docs/releases/0.3.3.md](docs/releases/0.3.3.md).
