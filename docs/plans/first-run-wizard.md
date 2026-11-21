@@ -2,6 +2,9 @@
 
 Status: **built in 0.4.0.** Decisions: keep screen 6 (some people won't be confident going into Settings);
 first install only (existing users run it from Settings); keep all 8 screens.
+0.4.1: the font is a drop-down of every font (easy-reading ones first). 0.4.2: "Opening your files" lists only
+craft types found in her folder. 0.5.0: new screen 7 "Files you'd rather not see" (hide kinds of files), so the
+guide now has **9 screens**: comfort and safety is 8, the summary is 9.
 
 ## Goal
 When Craft Library is opened for the first time, a short guide walks the person through the main choices,

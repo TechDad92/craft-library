@@ -15,7 +15,7 @@ namespace CraftLibrary.App.ViewModels;
 /// </summary>
 public sealed partial class SetupGuideViewModel(MainViewModel main) : ObservableObject
 {
-    public const int Steps = 8;
+    public const int Steps = 9;
 
     private Settings S => main.S;
     public SettingsViewModel Options => main.SettingsVm;
@@ -46,6 +46,7 @@ public sealed partial class SetupGuideViewModel(MainViewModel main) : Observable
 
     public bool Is1 => Step == 1; public bool Is2 => Step == 2; public bool Is3 => Step == 3; public bool Is4 => Step == 4;
     public bool Is5 => Step == 5; public bool Is6 => Step == 6; public bool Is7 => Step == 7; public bool Is8 => Step == 8;
+    public bool Is9 => Step == 9;
 
     public ICommand Next => Cmd.Of(() =>
     {
@@ -155,7 +156,11 @@ public sealed partial class SetupGuideViewModel(MainViewModel main) : Observable
 
     public bool HasCraftTypes => OpenWithRows.Count > 0;
 
-    // ---------------- 7. comfort and safety ----------------
+    // ---------------- 7. files you'd rather not see ----------------
+    public List<CheckVm> HideRows => Options.HideRows;
+    public bool HasHideRows => HideRows.Count > 0;
+
+    // ---------------- 8. comfort and safety ----------------
     public List<CheckVm> ComfortChecks =>
     [
         Check("Ask before removing files", "Asks “Are you sure?” before anything goes to the Recycle Bin.", S.AskRecycle, s => s.AskRecycle = !s.AskRecycle),
@@ -168,7 +173,7 @@ public sealed partial class SetupGuideViewModel(MainViewModel main) : Observable
     private CheckVm Check(string label, string help, bool on, Action<Settings> flip) =>
         new() { Label = label, Help = help, On = on, Toggle = Cmd.Of(() => { flip(S); main.SettingsChanged(); }) };
 
-    // ---------------- 8. summary ----------------
+    // ---------------- 9. summary ----------------
     public sealed record SummaryRow(string Label, string Value, ICommand Change);
 
     public List<SummaryRow> Summary
@@ -188,7 +193,8 @@ public sealed partial class SetupGuideViewModel(MainViewModel main) : Observable
                 new("Colours", Options.Colours.Summary, GoToStep(4)),
                 new("Files", Options.Layout.Summary, GoToStep(5)),
                 new("Opening files", changedPrograms == 0 ? "Windows’ choice for every kind of file" : changedPrograms + (changedPrograms == 1 ? " kind of file uses a program you chose" : " kinds of file use programs you chose"), GoToStep(6)),
-                new("Comfort", comfortOn.Count == 0 ? "All switched off" : string.Join(", ", comfortOn), GoToStep(7)),
+                new("Hidden files", S.HiddenExts.Count == 0 ? "Nothing hidden" : string.Join(", ", S.HiddenExts.Order().Select(e => "." + e)), GoToStep(7)),
+                new("Comfort", comfortOn.Count == 0 ? "All switched off" : string.Join(", ", comfortOn), GoToStep(8)),
             ];
         }
     }

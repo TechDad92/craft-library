@@ -55,7 +55,7 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
         ("colours", "Colours", "Palette", ["Theme", "Accent", "Strength", "Tint"], "colours colors theme light dark accent pastel muted bold background tint"),
         ("style", "Background", "Layers", ["Texture"], "background pattern plain dots cutting mat pinstripe wash"),
         ("text", "Text & fonts", "TextAa", ["Fonts", "TextSize", "LineSpacing"], "text fonts font size line spacing reading dyslexic easy"),
-        ("layout", "Layout", "Layout", ["View", "Thumb", "Preview", "Sidebar", "Density", "ShowName", "ShowType", "ShowSize", "ShowDate", "Order", "BtnLabels"], "layout grid list thumbnails thumbnail size preview panel window folder list spacing compact show name type date order icons words"),
+        ("layout", "Layout", "Layout", ["View", "Thumb", "Preview", "Sidebar", "Density", "ShowName", "ShowType", "ShowSize", "ShowDate", "Order", "BtnLabels", "HiddenExts"], "layout grid list thumbnails thumbnail size preview panel window folder list spacing compact show name type date order icons words hide hidden kinds types"),
         ("comfort", "Comfort & focus", "Heart", ["HighContrast", "ReduceMotion", "FadeMessages", "Tips", "ShowProgress", "Remember"], "comfort focus contrast motion messages fade hover explain progress remember left off"),
         ("files", "Files & safety", "Shield", ["AskRecycle", "ShowBadges", "OpenWith"], "files safety recycle remove ask sure duplicates badges open programs program"),
         ("features", "Buttons & features", "Toggles", ["Features"], "buttons features hide hidden show off turn"),
@@ -81,7 +81,8 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
             }
             case "layout":
                 return (S.View == "grid" ? "Grid" : "List") + " · " + (S.Thumb switch { "s" => "small", "l" => "large", "xl" => "extra large", _ => "medium" }) + " thumbnails · "
-                    + (S.Preview switch { "bottom" => "preview at the bottom", "popout" => "preview in its own window", "hidden" => "preview hidden", _ => "preview on the right" });
+                    + (S.Preview switch { "bottom" => "preview at the bottom", "popout" => "preview in its own window", "hidden" => "preview hidden", _ => "preview on the right" })
+                    + (S.HiddenExts.Count > 0 ? " · " + S.HiddenExts.Count + (S.HiddenExts.Count == 1 ? " kind of file hidden" : " kinds of file hidden") : "");
             case "comfort":
             {
                 var n = new[] { S.HighContrast, S.ReduceMotion, S.FadeMessages, S.Tips, S.ShowProgress, S.Remember }.Count(b => b);
@@ -249,6 +250,40 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
         new() { Label = "Size", On = S.ShowSize, Toggle = SetCmd(s => s.ShowSize = !s.ShowSize) },
         new() { Label = "Date added", On = S.ShowDate, Toggle = SetCmd(s => s.ShowDate = !s.ShowDate) },
     ];
+
+    // ---------------- Hide kinds of files ----------------
+
+    /// <summary>
+    /// One tick-box per kind of file found in her folders (ticked = hidden), with how many there are.
+    /// Kinds that aren't craft files come first, as those are the ones people usually want out of the way.
+    /// </summary>
+    public List<CheckVm> HideRows
+    {
+        get
+        {
+            var counts = main.CountByExt();
+            foreach (var e in S.HiddenExts) counts.TryAdd(e, 0);
+            return counts.Keys.OrderBy(e => FileKinds.IsCraft(e)).ThenBy(e => e, StringComparer.OrdinalIgnoreCase).Select(e => new CheckVm
+            {
+                Label = "." + e + " · " + FileKinds.TypeLabel(e),
+                Help = counts[e] == 1 ? "1 file" : counts[e] + " files",
+                On = S.IsHiddenExt(e),
+                Toggle = SetCmd(s => { if (!s.HiddenExts.Remove(e)) s.HiddenExts.Add(e); }),
+            }).ToList();
+        }
+    }
+
+    public bool HasHideRows => main.CountByExt().Count > 0 || S.HiddenExts.Count > 0;
+
+    /// <summary>The quiet note about hidden files (shown here rather than next to the files, to keep that area calm).</summary>
+    public string HiddenNote
+    {
+        get
+        {
+            var n = main.HiddenFileCount;
+            return S.HiddenExts.Count == 0 ? "" : n == 0 ? "No files are hidden right now." : n == 1 ? "1 file is hidden right now." : n + " files are hidden right now.";
+        }
+    }
 
     // ---------------- Comfort & focus ----------------
     public List<CheckVm> ComfortChecks =>

@@ -331,6 +331,15 @@ public sealed partial class MainViewModel
         catch (Exception ex) { ShowMessage(ex.Message); }
     });
 
+    /// <summary>Right-click › "Hide all .xlsx files": hides that kind of file everywhere (nothing is moved or deleted).</summary>
+    public void HideKind(string ext)
+    {
+        var e = ext.ToLowerInvariant();
+        if (!S.IsHiddenExt(e)) S.HiddenExts.Add(e);
+        SettingsChanged();
+        ShowMessage("All ." + e + " files are now hidden. They’re still in their folders. To see them again: Menu › Settings › Layout › Hide kinds of files.");
+    }
+
     /// <summary>Opens one of her folders in File Explorer.</summary>
     public void OpenFolderInExplorer(string folder)
     {
@@ -437,7 +446,7 @@ public sealed partial class MainViewModel
         it.Dir = Path.GetDirectoryName(newPath)!;
         it.Folder = folder;
         _byPath[newPath] = it;
-        _counts = _items.GroupBy(i => i.Folder, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
+        _counts = Shown.GroupBy(i => i.Folder, StringComparer.OrdinalIgnoreCase).ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
     }
 
     private string FolderForDir(string dir) => !string.IsNullOrEmpty(Data.InboxPath) && PathRules.Same(dir, Data.InboxPath) ? Unsorted : PathRules.Norm(dir);
@@ -687,7 +696,7 @@ public sealed partial class MainViewModel
 
     public void KeepOnly(string key, FileItemVm keep)
     {
-        var others = _items.Where(i => i.Dup == key && !ReferenceEquals(i, keep)).ToList();
+        var others = Shown.Where(i => i.Dup == key && !ReferenceEquals(i, keep)).ToList();
         Recycle(others, "Kept 1 copy and sent " + others.Count + (others.Count == 1 ? " copy" : " copies") + " to the Recycle Bin");
     }
 

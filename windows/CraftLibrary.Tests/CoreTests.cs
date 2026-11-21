@@ -265,6 +265,18 @@ public sealed class DataTests : IDisposable
     }
 
     [Fact]
+    public void Hidden_file_types_are_saved_and_tidied()
+    {
+        var file = Path.Combine(t.Root, "hidden.json");
+        File.WriteAllText(file, """{ "settings": { "hiddenExts": [ "XLSX", ".exe", "xlsx", " " ] } }""");
+        var d = AppData.Load(file);
+        Assert.Equal(["xlsx", "exe"], d.Settings.HiddenExts);
+        Assert.True(d.Settings.IsHiddenExt("XLSX"));
+        Assert.False(d.Settings.IsHiddenExt("png"));
+        Assert.Empty(new Settings().HiddenExts); // nothing hidden to start with
+    }
+
+    [Fact]
     public void A_damaged_file_falls_back_to_the_backup()
     {
         var file = Path.Combine(t.Root, "data.json");

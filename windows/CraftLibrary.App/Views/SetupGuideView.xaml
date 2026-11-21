@@ -238,15 +238,26 @@
                             </ItemsControl>
                         </StackPanel>
 
-                        <!-- 7. Comfort and safety -->
+                        <!-- 7. Files you'd rather not see -->
                         <StackPanel Visibility="{Binding Is7, Converter={StaticResource Vis}}">
+                            <TextBlock Text="Files you’d rather not see" Style="{StaticResource Title}" />
+                            <TextBlock Style="{StaticResource Intro}" Text="Folders often have other things in them, like spreadsheets or programs. Tick any kinds of file you’d rather not see in Craft Library." />
+                            <TextBlock Style="{StaticResource Help}" Margin="0,0,0,16" Text="Hidden files stay safely in their folders: they’re just out of sight. You can show them again any time in Settings." />
+                            <Border Background="{DynamicResource B.subtle}" CornerRadius="12" Padding="14,12" Visibility="{Binding HasHideRows, Converter={StaticResource Vis}, ConverterParameter=not}">
+                                <TextBlock FontSize="15" TextWrapping="Wrap" Text="No files were found in your folder yet, so there’s nothing to hide. You can do this later in Menu › Settings, under “Layout”." />
+                            </Border>
+                            <ItemsControl ItemsSource="{Binding HideRows}" ItemTemplate="{StaticResource CheckRow}" Focusable="False" />
+                        </StackPanel>
+
+                        <!-- 8. Comfort and safety -->
+                        <StackPanel Visibility="{Binding Is8, Converter={StaticResource Vis}}">
                             <TextBlock Text="Comfort and safety" Style="{StaticResource Title}" />
                             <TextBlock Style="{StaticResource Intro}" Text="These are all optional. Turn on any that sound helpful." />
                             <ItemsControl ItemsSource="{Binding ComfortChecks}" ItemTemplate="{StaticResource CheckRow}" Focusable="False" />
                         </StackPanel>
 
-                        <!-- 8. All done -->
-                        <StackPanel Visibility="{Binding Is8, Converter={StaticResource Vis}}">
+                        <!-- 9. All done -->
+                        <StackPanel Visibility="{Binding Is9, Converter={StaticResource Vis}}">
                             <TextBlock Text="You’re ready to go!" Style="{StaticResource Title}" FontSize="30" />
                             <TextBlock Style="{StaticResource Intro}" Text="Here’s what you chose. Click “Change” to go back to any of them." />
                             <ItemsControl ItemsSource="{Binding Summary}" Focusable="False">
