@@ -236,10 +236,10 @@
             <DockPanel Grid.Row="2" LastChildFill="True">
                 <v:SidebarView DockPanel.Dock="{Binding SidebarRight, Converter={StaticResource SideIf}, ConverterParameter='Right|Left'}"
                                Visibility="{Binding ShowSidebar, Converter={StaticResource Vis}}" />
-                <!-- Folder list hidden: a slim tab half-way down its edge brings it back -->
+                <!-- Half-way down the folder list's inner edge: hides it, and stays at the window's edge to bring it back -->
                 <Button DockPanel.Dock="{Binding SidebarRight, Converter={StaticResource SideIf}, ConverterParameter='Right|Left'}" VerticalAlignment="Center"
                         Width="22" Height="72" Command="{Binding ToggleFolders}" Visibility="{Binding FoldersTab, Converter={StaticResource Vis}}"
-                        ToolTip="Show the folder list" AutomationProperties.Name="Show the folder list">
+                        ToolTip="{Binding FoldersTabHint}" AutomationProperties.Name="{Binding FoldersTabHint}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource EdgeTab}">
                             <Setter Property="Tag" Value="0,12,12,0" />
@@ -253,27 +253,17 @@
                         </Style>
                     </Button.Style>
                     <c:Icon Glyph="{StaticResource Icon.ChevronRight}" Size="16" Foreground="{DynamicResource B.chrome-muted}">
-                        <c:Icon.Style>
-                            <Style TargetType="c:Icon">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SidebarRight}" Value="True">
-                                        <Setter Property="LayoutTransform">
-                                            <Setter.Value>
-                                                <RotateTransform Angle="180" />
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </c:Icon.Style>
+                        <c:Icon.LayoutTransform>
+                            <RotateTransform Angle="{Binding FoldersTabAngle}" />
+                        </c:Icon.LayoutTransform>
                     </c:Icon>
                 </Button>
                 <v:PreviewView DockPanel.Dock="{Binding PreviewBottom, Converter={StaticResource SideIf}, ConverterParameter='Bottom|Right'}"
                                Visibility="{Binding ShowPreviewPanel, Converter={StaticResource Vis}}" />
-                <!-- Preview hidden: a slim tab half-way down the right edge (or in the middle of the bottom edge) brings it back -->
+                <!-- On the preview's inner edge (half-way down, or in the middle when it's at the bottom): hides it, and stays at the window's edge to bring it back -->
                 <Button DockPanel.Dock="{Binding PreviewBottom, Converter={StaticResource SideIf}, ConverterParameter='Bottom|Right'}"
                         Command="{Binding TogglePreview}" Visibility="{Binding PreviewTab, Converter={StaticResource Vis}}"
-                        ToolTip="Show the preview" AutomationProperties.Name="Show the preview">
+                        ToolTip="{Binding PreviewTabHint}" AutomationProperties.Name="{Binding PreviewTabHint}">
                     <Button.Style>
                         <Style TargetType="Button" BasedOn="{StaticResource EdgeTab}">
                             <Setter Property="Tag" Value="12,0,0,12" />
@@ -294,25 +284,9 @@
                         </Style>
                     </Button.Style>
                     <c:Icon Glyph="{StaticResource Icon.ChevronRight}" Size="16" Foreground="{DynamicResource B.chrome-muted}">
-                        <c:Icon.Style>
-                            <Style TargetType="c:Icon">
-                                <!-- Points back into the window: left, or up from the bottom -->
-                                <Setter Property="LayoutTransform">
-                                    <Setter.Value>
-                                        <RotateTransform Angle="180" />
-                                    </Setter.Value>
-                                </Setter>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding PreviewBottom}" Value="True">
-                                        <Setter Property="LayoutTransform">
-                                            <Setter.Value>
-                                                <RotateTransform Angle="-90" />
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </c:Icon.Style>
+                        <c:Icon.LayoutTransform>
+                            <RotateTransform Angle="{Binding PreviewTabAngle}" />
+                        </c:Icon.LayoutTransform>
                     </c:Icon>
                 </Button>
                 <Grid>

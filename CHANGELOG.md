@@ -2,6 +2,10 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.8.1 (21 Nov 2026)
+One chevron tab half-way down the folder list's and preview's edge both hides and shows them (no arrows inside the
+panels any more). See [docs/releases/0.8.1.md](docs/releases/0.8.1.md).
+
 ## 0.8.0 (21 Nov 2026)
 Focus mode removed. The folder list and preview hide with a small arrow and come back with a tab at the window's edge
 (also Settings › Layout › Panels). See [docs/releases/0.8.0.md](docs/releases/0.8.0.md).

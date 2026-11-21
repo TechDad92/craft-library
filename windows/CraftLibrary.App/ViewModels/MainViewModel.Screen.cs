@@ -294,7 +294,13 @@ public sealed partial class MainViewModel
     public List<SideRow> SideRows { get; private set; } = [];
     // While there's no craft folder yet, the folder list holds the "Choose craft folder" button, so it always shows.
     public bool ShowSidebar => S.ShowFolders || IsSetup;
-    public bool FoldersTab => !ShowSidebar;
+    /// <summary>
+    /// The tab half-way down the folder list's inner edge: it hides the list, and stays at the window's edge to bring it back.
+    /// The arrow points the way the list will go.
+    /// </summary>
+    public bool FoldersTab => !IsSetup;
+    public double FoldersTabAngle => (ShowSidebar ^ SidebarRight) ? 180 : 0;
+    public string FoldersTabHint => ShowSidebar ? "Hide the folder list" : "Show the folder list";
     public bool SidebarRight => S.Sidebar == "right";
     public bool InboxActive => Q.Length == 0 && View == "browse" && Folder == Unsorted;
     public bool LaterActive => Q.Length == 0 && View == "browse" && Folder == LaterPile;
@@ -396,8 +402,13 @@ public sealed partial class MainViewModel
 
     // ---------------- preview (right or bottom) ----------------
     public bool ShowPreviewPanel => S.ShowPreview && (S.Preview is "right" or "bottom") && !IsSetup && View == "browse";
-    /// <summary>The tab that brings the preview back: on the right edge, or the bottom edge when the preview lives there.</summary>
-    public bool PreviewTab => !S.ShowPreview && !IsSetup && View == "browse";
+    /// <summary>
+    /// The tab on the preview's inner edge (right side, or bottom): it hides the preview, and stays at the window's edge
+    /// to bring it back. In its own window the preview has a Hide link instead, so the tab shows only once it's hidden.
+    /// </summary>
+    public bool PreviewTab => !IsSetup && View == "browse" && (!S.ShowPreview || S.Preview != "popout");
+    public double PreviewTabAngle => PreviewBottom ? (S.ShowPreview ? 90 : -90) : (S.ShowPreview ? 0 : 180);
+    public string PreviewTabHint => S.ShowPreview ? "Hide the preview" : "Show the preview";
     public bool PreviewRight => S.Preview == "right";
     public bool PreviewBottom => S.Preview == "bottom";
     public bool PreviewPopout => S.ShowPreview && S.Preview == "popout" && !IsSetup;

@@ -44,24 +44,8 @@
                             </StackPanel>
                         </Button>
                         <Button Style="{StaticResource Btn.Link}" Command="{Binding DockPreview}" Visibility="{Binding PreviewPopout, Converter={StaticResource Vis}}" Content="Put back in the window" />
+                        <!-- In its own window it hides with this; in the main window, with the tab on its edge -->
                         <Button Style="{StaticResource Btn.Link}" Command="{Binding HidePreview}" Content="Hide" Margin="8,0,0,0" Visibility="{Binding PreviewPopout, Converter={StaticResource Vis}}" />
-                        <Button Style="{StaticResource Btn.Icon}" Width="32" Height="32" Command="{Binding HidePreview}" Foreground="{DynamicResource B.muted}" Margin="6,-4,-8,-4"
-                                ToolTip="Hide the preview" ToolTipService.IsEnabled="True" AutomationProperties.Name="Hide the preview"
-                                Visibility="{Binding PreviewPopout, Converter={StaticResource Vis}, ConverterParameter=not}">
-                            <!-- Points the way the panel goes: right, or down when it's at the bottom -->
-                            <c:Icon Size="18">
-                                <c:Icon.Style>
-                                    <Style TargetType="c:Icon">
-                                        <Setter Property="Glyph" Value="{StaticResource Icon.ChevronRight}" />
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding PreviewBottom}" Value="True">
-                                                <Setter Property="Glyph" Value="{StaticResource Icon.ChevronDown}" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </c:Icon.Style>
-                            </c:Icon>
-                        </Button>
                     </StackPanel>
                     <TextBlock Text="PREVIEW" Style="{StaticResource SectionLabel}" Margin="0" VerticalAlignment="Center" />
                 </DockPanel>

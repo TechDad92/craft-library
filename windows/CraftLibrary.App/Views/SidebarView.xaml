@@ -15,34 +15,11 @@
                 </Style.Triggers>
             </Style>
         </Border.Style>
-        <DockPanel>
-        <!-- Hides the folder list; the tab at the window's edge brings it back -->
-        <Button DockPanel.Dock="Top" HorizontalAlignment="Right" Style="{StaticResource Btn.Icon}" Width="32" Height="32" Margin="0,6,8,0" Command="{Binding ToggleFolders}" Foreground="{DynamicResource B.muted}"
-                ToolTip="Hide the folder list" ToolTipService.IsEnabled="True" AutomationProperties.Name="Hide the folder list"
-                Visibility="{Binding IsSetup, Converter={StaticResource Vis}, ConverterParameter=not}">
-            <c:Icon Glyph="{StaticResource Icon.ChevronRight}" Size="18">
-                <c:Icon.Style>
-                    <Style TargetType="c:Icon">
-                        <!-- Points the way the panel goes: left, or right when the folder list is on the right -->
-                        <Setter Property="LayoutTransform">
-                            <Setter.Value>
-                                <RotateTransform Angle="180" />
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding SidebarRight}" Value="True">
-                                <Setter Property="LayoutTransform" Value="{x:Null}" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </c:Icon.Style>
-            </c:Icon>
-        </Button>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
-            <StackPanel Margin="12,0,12,24">
+            <StackPanel Margin="12,20,12,24">
 
                 <!-- First visit: choose the craft folder -->
-                <Border Visibility="{Binding IsSetup, Converter={StaticResource Vis}}" Background="{DynamicResource B.chrome}" BorderBrush="{DynamicResource B.border}" BorderThickness="1" CornerRadius="14" Padding="16" Margin="0,20,0,0">
+                <Border Visibility="{Binding IsSetup, Converter={StaticResource Vis}}" Background="{DynamicResource B.chrome}" BorderBrush="{DynamicResource B.border}" BorderThickness="1" CornerRadius="14" Padding="16">
                     <StackPanel>
                         <TextBlock Text="Where are your craft files?" FontSize="16" FontWeight="Bold" TextWrapping="Wrap" />
                         <TextBlock Text="Pick the main folder that holds all your craft folders. You can add portable drives later." FontSize="14" Foreground="{DynamicResource B.chrome-muted}" TextWrapping="Wrap" Margin="0,10,0,12" />
@@ -173,6 +150,5 @@
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
-        </DockPanel>
     </Border>
 </UserControl>

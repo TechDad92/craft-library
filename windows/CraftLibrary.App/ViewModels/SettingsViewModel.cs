@@ -248,8 +248,8 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
     public List<OptionVm> BtnLabels => Seg(S.BtnLabels, ("both", "Icons and words", s => s.BtnLabels = "both"), ("words", "Words only", s => s.BtnLabels = "words"), ("icons", "Icons only", s => s.BtnLabels = "icons"));
     public List<CheckVm> PanelChecks =>
     [
-        new() { Label = "Show the folder list", Help = "You can also hide it with the small arrow at its top, and bring it back with the tab at the edge of the window.", On = S.ShowFolders, Toggle = SetCmd(s => s.ShowFolders = !s.ShowFolders) },
-        new() { Label = "Show the preview", Help = "The big picture and details of the file you click. You can also hide it with its small arrow, and bring it back with the tab at the edge of the window.", On = S.ShowPreview, Toggle = SetCmd(s => s.ShowPreview = !s.ShowPreview) },
+        new() { Label = "Show the folder list", Help = "You can also click the small tab half-way down its edge to hide it or bring it back.", On = S.ShowFolders, Toggle = SetCmd(s => s.ShowFolders = !s.ShowFolders) },
+        new() { Label = "Show the preview", Help = "The big picture and details of the file you click. You can also click the small tab on its edge to hide it or bring it back.", On = S.ShowPreview, Toggle = SetCmd(s => s.ShowPreview = !s.ShowPreview) },
         new() { Label = "Show the toolbar", Help = "The row of buttons under the top banner: Back, Undo, Duplicates, Settings and more. You can also hide it with the small arrow at its right-hand end, and bring it back with the tab at the top of the window.", On = S.ShowToolbar, Toggle = SetCmd(s => s.ShowToolbar = !s.ShowToolbar) },
     ];
 
