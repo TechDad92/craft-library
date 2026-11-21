@@ -42,7 +42,7 @@ public sealed partial class MainViewModel
 
     partial void OnToastChanged(string value) => _toastAt = DateTime.Now;
 
-    partial void OnSettingsOpenChanged(bool value) { if (value) SettingsVm.Refresh(); }
+    partial void OnSettingsOpenChanged(bool value) { if (value) { SettingsVm.ShowOtherTypes = false; SettingsVm.Refresh(); } }
 
     /// <summary>The first-run setup guide is showing.</summary>
     [ObservableProperty] private bool _guideOpen;

@@ -4,7 +4,7 @@ A Windows desktop app that helps the user's mum organise thousands of craft file
 patterned papers (JPG/PNG/PSD), SVG/DXF/EPS/Silhouette cut files, Word documents that hold a paper
 image, PDFs, zip bundles and fonts. It's a file manager first, with sorting tools added on.
 
-Current version: **0.4.1**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
+Current version: **0.4.2**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
 The Electron version is in `legacy-electron/` for reference only. Do not change it.
 
 ## Who it's for: these rules matter
@@ -59,6 +59,8 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
   - Right-click menus are built in code each time (`FilesView.xaml.cs`: `FileMenu`, `FolderMenu`), so they only
     show what applies and respect the feature switches. Styled by the implicit `ContextMenu`/`MenuItem` styles.
     Copying uses `SafeFiles.Copy` (never overwrites); undoing a copy sends only the copy to the Recycle Bin.
+  - Craft file types are `FileKinds.CraftExts`: the setup guide's "Opening your files" lists only those found in her
+    folders; Settings lists them first and keeps every other type under "Change how other kinds of files open".
   - **Never use `Effect` (DropShadowEffect etc.)**: it renders text as a bitmap, which blurs at Small/Large text
     size (the root is scaled). Use `Controls/ShadowBorder` for shadows.
   - `App.xaml.cs`: single instance, unexpected errors go to `problems.log` and the app keeps going;

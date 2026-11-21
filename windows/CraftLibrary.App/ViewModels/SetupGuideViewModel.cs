@@ -149,16 +149,11 @@ public sealed partial class SetupGuideViewModel(MainViewModel main) : Observable
     }
 
     // ---------------- 6. opening files ----------------
-    /// <summary>The craft file types found in her folders (or the common ones, if none are found yet).</summary>
-    public List<OpenWithRowVm> OpenWithRows
-    {
-        get
-        {
-            var found = main.AllExtensions().Where(e => FileKinds.KindFor(e) != FileKind.Unknown || FileKinds.CommonExts.Contains(e, StringComparer.OrdinalIgnoreCase))
-                .Select(e => e.ToLowerInvariant()).Distinct().OrderBy(e => e).Take(12).ToList();
-            return Options.BuildOpenWithRows(found.Count > 0 ? found : ["jpg", "png", "pdf", "docx", "svg", "studio3"], "Windows’ choice");
-        }
-    }
+    /// <summary>Only the craft file types actually found in her folders, so there's nothing to choose for files she doesn't have.</summary>
+    public List<OpenWithRowVm> OpenWithRows =>
+        Options.BuildOpenWithRows(main.AllExtensions().Select(e => e.ToLowerInvariant()).Where(FileKinds.IsCraft).Distinct().Order(), "Windows’ choice");
+
+    public bool HasCraftTypes => OpenWithRows.Count > 0;
 
     // ---------------- 7. comfort and safety ----------------
     public List<CheckVm> ComfortChecks =>

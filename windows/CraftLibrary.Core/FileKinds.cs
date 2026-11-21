@@ -50,6 +50,23 @@ public static partial class FileKinds
 
     public static string ShortDate(DateTime utc) => utc.ToLocalTime().ToString("d MMM yyyy", CultureInfo.GetCultureInfo("en-GB"));
 
+    /// <summary>
+    /// The kinds of file a crafter works with: pictures and papers, PDFs, cut files, Word print sheets, zip bundles
+    /// and fonts. The setup guide and the top of Settings › "Open files with" list only these; every other kind of file
+    /// is under "Change how other kinds of files open".
+    /// </summary>
+    public static readonly IReadOnlySet<string> CraftExts = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "jpg", "jpeg", "png", "gif", "bmp", "webp", "tif", "tiff", "psd",
+        "pdf",
+        "svg", "eps", "ai", "dxf", "studio3", "studio", "cut", "fcm",
+        "docx", "doc",
+        "zip",
+        "ttf", "otf",
+    };
+
+    public static bool IsCraft(string ext) => CraftExts.Contains(ext ?? "");
+
     /// <summary>Craft file types always listed under "Open files with", even before any are found.</summary>
     public static readonly string[] CommonExts = ["jpg", "png", "pdf", "docx", "svg", "psd", "eps", "dxf", "studio3", "zip", "ttf", "otf"];
 }
