@@ -31,6 +31,8 @@ public sealed class Settings
     public bool ShowDate { get; set; }
     public string Order { get; set; } = "name";              // name | added | type | size
     public string BtnLabels { get; set; } = "both";          // both | words | icons
+    /// <summary>The toolbar under the banner (Back, Undo, Duplicates, Settings…). Shown to start with.</summary>
+    public bool ShowToolbar { get; set; } = true;
     /// <summary>File endings she has chosen not to see (e.g. "xlsx"). The files are never touched, just not shown.</summary>
     public List<string> HiddenExts { get; set; } = [];
 

@@ -57,8 +57,38 @@
                         </Grid>
                     </StackPanel>
 
-                    <!-- Right: occasional buttons, then minimise / maximise / close -->
+                    <!-- Right: show/hide the toolbar (and Exit focus when the toolbar is hidden), then minimise / maximise / close -->
                     <StackPanel x:Name="BannerRight" Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True">
+                            <Button Style="{StaticResource Btn.Tool}" Command="{Binding ToggleFocus}" c:Ui.Active="True" Background="{DynamicResource B.accent}" Foreground="{DynamicResource B.on-accent}"
+                                    BorderBrush="{DynamicResource B.accent-line}" Visibility="{Binding ShowBannerExitFocus, Converter={StaticResource Vis}}" AutomationProperties.Name="Exit focus">
+                                <StackPanel Orientation="Horizontal">
+                                    <c:Icon Glyph="{StaticResource Icon.Focus}" Size="18" Margin="0,0,8,0" />
+                                    <TextBlock Text="Exit focus" />
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource Btn.Tool}" Margin="0" Command="{Binding ToggleToolbar}" ToolTip="{Binding ToolbarHint}" AutomationProperties.Name="{Binding ToolbarButtonText}">
+                                <StackPanel Orientation="Horizontal">
+                                    <c:Icon Size="18" Visibility="{DynamicResource V.btnIcon}">
+                                        <c:Icon.Style>
+                                            <Style TargetType="c:Icon">
+                                                <Setter Property="Glyph" Value="{StaticResource Icon.ChevronDown}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ToolbarVisible}" Value="True">
+                                                        <Setter Property="LayoutTransform">
+                                                            <Setter.Value>
+                                                                <RotateTransform Angle="180" />
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </c:Icon.Style>
+                                    </c:Icon>
+                                    <TextBlock Text="{Binding ToolbarButtonText}" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="14,-12,-24,0" WindowChrome.IsHitTestVisibleInChrome="True">
                             <Button Style="{StaticResource Btn.Caption}" Click="OnMinimise" ToolTip="Minimise" AutomationProperties.Name="Minimise">
                                 <c:Icon Glyph="{StaticResource Icon.WinMin}" Size="20" Thickness="1.2" />
@@ -74,60 +104,23 @@
                 </Grid>
             </Border>
 
-            <!-- ============ Toolbar: Back / Forward, Undo / Redo, and quick view controls ============ -->
+            <!-- ============ Toolbar: everything that used to be in the Menu, plus Back / Forward, Undo / Redo and view controls.
+                 Hidden with "Hide toolbar" in the banner or Settings › Layout. On a narrow window the right-hand group
+                 moves onto a second line (MainWindow.xaml.cs, FitToolbar) instead of being cut off. ============ -->
             <Border Grid.Row="1" Background="{DynamicResource B.panel}" BorderBrush="{DynamicResource B.border}" BorderThickness="0,0,0,1" Padding="16,8"
-                    TextElement.FontFamily="{DynamicResource F.banner}" Visibility="{Binding ShowToolbar, Converter={StaticResource Vis}}">
-                <DockPanel LastChildFill="False">
-                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                        <Grid x:Name="MenuArea" Margin="0,0,8,0">
-                            <ToggleButton x:Name="MenuBtn" Style="{StaticResource Btn.Tool}" Margin="0" IsChecked="{Binding MenuOpen}" ToolTip="Duplicates, Focus mode, History and Settings"
-                                          IsHitTestVisible="{Binding IsOpen, ElementName=MenuPopup, Converter={StaticResource Not}}" AutomationProperties.Name="Menu">
-                                <StackPanel Orientation="Horizontal">
-                                    <c:Icon Glyph="{StaticResource Icon.Menu}" Size="18" Margin="0,0,8,0" />
-                                    <TextBlock Text="Menu" />
-                                    <c:Icon Glyph="{StaticResource Icon.ChevronDown}" Size="16" Margin="8,0,0,0" />
-                                </StackPanel>
-                            </ToggleButton>
-                            <Popup x:Name="MenuPopup" IsOpen="{Binding MenuOpen}" StaysOpen="False" PlacementTarget="{Binding ElementName=MenuBtn}" Placement="Bottom" AllowsTransparency="True" PopupAnimation="Fade">
-                                <c:ShadowBorder Style="{StaticResource PopupCard}" Width="290">
-                                    <StackPanel>
-                                        <Button Style="{StaticResource Btn.Row}" Command="{Binding GoDupes}" Visibility="{Binding FeatDupes, Converter={StaticResource Vis}}">
-                                            <DockPanel>
-                                                <Border DockPanel.Dock="Right" Style="{StaticResource WarnBadge}" Visibility="{Binding HasDupGroups, Converter={StaticResource Vis}}">
-                                                    <TextBlock Text="{Binding DupGroupCount}" />
-                                                </Border>
-                                                <c:Icon Glyph="{StaticResource Icon.Copy}" Size="18" Margin="4,0,12,0" />
-                                                <TextBlock Text="Duplicates" VerticalAlignment="Center" />
-                                            </DockPanel>
-                                        </Button>
-                                        <Button Style="{StaticResource Btn.Row}" Command="{Binding ToggleFocus}" Visibility="{Binding FeatFocus, Converter={StaticResource Vis}}" ToolTip="Hide the folder list and search so you can concentrate on the files">
-                                            <DockPanel>
-                                                <Border DockPanel.Dock="Right" Background="{DynamicResource B.subtle}" CornerRadius="999" Padding="8,1">
-                                                    <TextBlock Text="{Binding FocusState}" FontSize="12" Foreground="{DynamicResource B.muted}" />
-                                                </Border>
-                                                <c:Icon Glyph="{StaticResource Icon.Focus}" Size="18" Margin="4,0,12,0" />
-                                                <TextBlock Text="Focus mode" VerticalAlignment="Center" />
-                                            </DockPanel>
-                                        </Button>
-                                        <Button Style="{StaticResource Btn.Row}" Command="{Binding OpenHistory}" Visibility="{Binding FeatHistory, Converter={StaticResource Vis}}">
-                                            <DockPanel>
-                                                <c:Icon Glyph="{StaticResource Icon.Clock}" Size="18" Margin="4,0,12,0" />
-                                                <TextBlock Text="History" VerticalAlignment="Center" />
-                                            </DockPanel>
-                                        </Button>
-                                        <Separator Margin="8,6" Background="{DynamicResource B.line}" />
-                                        <Button Style="{StaticResource Btn.Row}" Command="{Binding OpenSettings}">
-                                            <DockPanel>
-                                                <c:Icon Glyph="{StaticResource Icon.Sliders}" Size="18" Margin="4,0,12,0" />
-                                                <TextBlock Text="Settings" VerticalAlignment="Center" />
-                                            </DockPanel>
-                                        </Button>
-                                    </StackPanel>
-                                </c:ShadowBorder>
-                            </Popup>
-                        </Grid>
-                        <Rectangle Width="1" Height="26" Fill="{DynamicResource B.border}" Margin="6,0,14,0" />
-                        <StackPanel Orientation="Horizontal" Visibility="{Binding ShowNavTools, Converter={StaticResource Vis}}">
+                    TextElement.FontFamily="{DynamicResource F.banner}" Visibility="{Binding ToolbarVisible, Converter={StaticResource Vis}}">
+                <Grid x:Name="Toolbar">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Left: going places and undoing, then Duplicates and History -->
+                    <StackPanel x:Name="ToolLeft" Orientation="Horizontal" HorizontalAlignment="Left" Visibility="{Binding ShowNavTools, Converter={StaticResource Vis}}">
                         <Button Style="{StaticResource Btn.Tool}" Command="{Binding GoBack}" IsEnabled="{Binding CanGoBack}" ToolTip="{Binding BackHint}" ToolTipService.ShowOnDisabled="True" AutomationProperties.Name="Back">
                             <StackPanel Orientation="Horizontal">
                                 <c:Icon Glyph="{StaticResource Icon.Back}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
@@ -153,22 +146,32 @@
                                 <TextBlock Text="Redo" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
                             </StackPanel>
                         </Button>
-                        </StackPanel>
+                        <Rectangle Width="1" Height="26" Fill="{DynamicResource B.border}" Margin="6,0,14,0" />
+                        <Button Style="{StaticResource Btn.ToolSeg}" Command="{Binding GoDupes}" c:Ui.Active="{Binding IsDupes}" ToolTip="Files saved more than once" Visibility="{Binding FeatDupes, Converter={StaticResource Vis}}" AutomationProperties.Name="Duplicates">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Glyph="{StaticResource Icon.Copy}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
+                                <TextBlock Text="Duplicates" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
+                                <Border Style="{StaticResource WarnBadge}" Margin="8,0,0,0" Padding="7,0" Visibility="{Binding HasDupGroups, Converter={StaticResource Vis}}">
+                                    <TextBlock Text="{Binding DupGroupCount}" />
+                                </Border>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource Btn.Tool}" Command="{Binding OpenHistory}" ToolTip="Everything you’ve done today, with Undo" Visibility="{Binding FeatHistory, Converter={StaticResource Vis}}" AutomationProperties.Name="History">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Glyph="{StaticResource Icon.Clock}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
+                                <TextBlock Text="History" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
 
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <!-- Right: occasional bits, view controls, then Focus mode and Settings -->
+                    <StackPanel x:Name="ToolRight" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                         <Border Visibility="{Binding ShowProgressPill, Converter={StaticResource Vis}}" Background="{DynamicResource B.panel}" CornerRadius="999" Padding="14,8" Margin="0,0,10,0" VerticalAlignment="Center">
                             <StackPanel Orientation="Horizontal">
                                 <c:Icon Glyph="{StaticResource Icon.Check}" Size="16" Foreground="{DynamicResource B.accent-text}" Margin="0,0,6,0" />
                                 <TextBlock Text="{Binding ProgressText}" FontSize="13" FontWeight="SemiBold" />
                             </StackPanel>
                         </Border>
-                        <Button Style="{StaticResource Btn.Plain}" Margin="0,0,10,0" Visibility="{Binding Focus, Converter={StaticResource Vis}}" Command="{Binding ToggleFocus}" Background="{DynamicResource B.accent}" Foreground="{DynamicResource B.on-accent}" BorderBrush="{DynamicResource B.accent-line}">
-                            <StackPanel Orientation="Horizontal">
-                                <c:Icon Glyph="{StaticResource Icon.Focus}" Size="18" Margin="0,0,8,0" />
-                                <TextBlock Text="Exit focus" />
-                            </StackPanel>
-                        </Button>
                         <Grid Margin="0,0,10,0" Visibility="{Binding HasHiddenShown, Converter={StaticResource Vis}}">
                             <ToggleButton x:Name="HiddenBtn" Style="{StaticResource Btn.Plain}" IsChecked="{Binding HiddenMenuOpen}" ToolTip="Things you have hidden. Click to bring them back."
                                           IsHitTestVisible="{Binding IsOpen, ElementName=HiddenPopup, Converter={StaticResource Not}}">
@@ -216,8 +219,21 @@
                             <TextBlock Text="Order by" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource B.muted}" Margin="14,0,8,0" />
                             <ComboBox ItemsSource="{Binding OrderChoices}" SelectedItem="{Binding OrderChoice}" Width="160" MinHeight="36" FontSize="14" AutomationProperties.Name="Order files by" />
                         </StackPanel>
+                        <Rectangle Width="1" Height="26" Fill="{DynamicResource B.border}" Margin="6,0,14,0" />
+                        <Button Style="{StaticResource Btn.ToolSeg}" Command="{Binding ToggleFocus}" c:Ui.Active="{Binding Focus}" ToolTip="Hide the folder list and search so you can concentrate on the files" Visibility="{Binding FeatFocus, Converter={StaticResource Vis}}" AutomationProperties.Name="Focus mode">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Glyph="{StaticResource Icon.Focus}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
+                                <TextBlock Text="Focus mode" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource Btn.ToolSeg}" Command="{Binding ToggleSettings}" c:Ui.Active="{Binding SettingsOpen}" ToolTip="Change how the app looks and works" AutomationProperties.Name="Settings">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Glyph="{StaticResource Icon.Sliders}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
+                                <TextBlock Text="Settings" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
-                </DockPanel>
+                </Grid>
             </Border>
 
             <!-- ============ Folder list | files | preview ============ -->

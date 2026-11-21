@@ -2,6 +2,10 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.6.0 (21 Nov 2026)
+No more Menu button: Duplicates, History, Focus mode and Settings are on the toolbar. The toolbar can be hidden
+("Hide toolbar" at the top, or Settings › Layout). See [docs/releases/0.6.0.md](docs/releases/0.6.0.md).
+
 ## 0.5.2 (21 Nov 2026)
 Menu button moved to the far left of the toolbar; fixed the empty "Order by" list. See [docs/releases/0.5.2.md](docs/releases/0.5.2.md).
 

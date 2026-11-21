@@ -86,7 +86,7 @@ public sealed partial class SetupGuideViewModel(MainViewModel main) : Observable
         main.Data.SetupGuideStep = 1;
         main.GuideOpen = false;
         main.SaveSoon();
-        main.ShowMessage("All set! You can change any of these choices later in Menu › Settings.");
+        main.ShowMessage("All set! You can change any of these choices later in Settings (on the toolbar).");
     }
 
     // ---------------- 2. craft folder and "To sort" ----------------
