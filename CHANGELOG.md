@@ -2,6 +2,10 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.4.2 (21 Nov 2026)
+"Open files with": craft file types first; other kinds tucked under "Change how other kinds of files open".
+The setup guide lists only craft types found in her folder. See [docs/releases/0.4.2.md](docs/releases/0.4.2.md).
+
 ## 0.4.1 (21 Nov 2026)
 Setup guide: choose from every font on the computer in a drop-down (easy-reading fonts first).
 See [docs/releases/0.4.1.md](docs/releases/0.4.1.md).

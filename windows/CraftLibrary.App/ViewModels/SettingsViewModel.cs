@@ -268,16 +268,34 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
         new() { Label = "Show duplicate badges on files", On = S.ShowBadges, Toggle = SetCmd(s => s.ShowBadges = !s.ShowBadges) },
     ];
 
-    public List<OpenWithRowVm> OpenWithRows
+    /// <summary>File endings found in her folders, plus any she has already chosen a program for.</summary>
+    private SortedSet<string> KnownExts()
+    {
+        var exts = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var e in main.AllExtensions()) exts.Add(e.ToLowerInvariant());
+        foreach (var e in S.OpenWith.Keys) exts.Add(e.ToLowerInvariant());
+        return exts;
+    }
+
+    /// <summary>Craft files (pictures, PDFs, cut files, Word, zips, fonts) found in her folders. The common ones are
+    /// listed until the first look at her folders has found something.</summary>
+    public List<OpenWithRowVm> CraftOpenWithRows
     {
         get
         {
-            var exts = new SortedSet<string>(FileKinds.CommonExts, StringComparer.OrdinalIgnoreCase);
-            foreach (var e in main.AllExtensions()) exts.Add(e);
-            foreach (var e in S.OpenWith.Keys) exts.Add(e.ToLowerInvariant());
-            return BuildOpenWithRows(exts, "Windows default");
+            var craft = KnownExts().Where(FileKinds.IsCraft).ToList();
+            return BuildOpenWithRows(craft.Count > 0 ? craft : FileKinds.CommonExts.Order(), "Windows default");
         }
     }
+
+    /// <summary>Every other kind of file found in her folders, kept out of the way under a button.</summary>
+    public List<OpenWithRowVm> OtherOpenWithRows => BuildOpenWithRows(KnownExts().Where(e => !FileKinds.IsCraft(e)), "Windows default");
+    public bool HasOtherTypes => KnownExts().Any(e => !FileKinds.IsCraft(e));
+
+    /// <summary>The "other kinds of files" list is open. Starts closed each time Settings opens.</summary>
+    public bool ShowOtherTypes { get; set; }
+    public string OtherTypesButton => ShowOtherTypes ? "Hide other kinds of files" : "Change how other kinds of files open";
+    public ICommand ToggleOtherTypes => Cmd.Of(() => { ShowOtherTypes = !ShowOtherTypes; Refresh(); });
 
     /// <summary>One row per file ending, each with "Windows default", her saved programs and "Choose a program…".</summary>
     public List<OpenWithRowVm> BuildOpenWithRows(IEnumerable<string> exts, string defaultWord) => exts.Select(e =>

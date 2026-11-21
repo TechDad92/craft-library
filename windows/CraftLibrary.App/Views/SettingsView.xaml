@@ -34,6 +34,15 @@
             <Setter Property="Margin" Value="0,14,0,8" />
         </Style>
 
+        <!-- One kind of file and the program it opens with -->
+        <DataTemplate x:Key="OpenWithRow">
+            <StackPanel Margin="0,0,0,10">
+                <TextBlock Text="{Binding Label}" FontSize="13" Margin="0,0,0,4" />
+                <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Selected, Mode=OneWay}" Tag="{Binding Ext}" SelectionChanged="OnProgramChosen"
+                          MinHeight="38" FontSize="14" AutomationProperties.Name="{Binding Label}" />
+            </StackPanel>
+        </DataTemplate>
+
         <!-- The clickable heading of each section -->
         <DataTemplate x:Key="SectionHead">
             <Button Style="{StaticResource Btn.Ghost}" Command="{Binding Toggle}" HorizontalContentAlignment="Stretch" Padding="14,10" c:Ui.Radius="14" FontWeight="Normal">
@@ -235,17 +244,38 @@
                                     <ItemsControl ItemsSource="{Binding SafetyChecks}" ItemTemplate="{StaticResource CheckRow}" Focusable="False" Margin="0,4,0,0" />
                                     <TextBlock Text="Open files with" Style="{StaticResource Label}" />
                                     <TextBlock Text="“Windows default” uses the program Windows normally opens that kind of file with. Only change one if you want this app to use a different program." Style="{StaticResource Muted}" Margin="0,0,0,10" />
-                                    <ItemsControl ItemsSource="{Binding OpenWithRows}" Focusable="False">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Margin="0,0,0,10">
-                                                    <TextBlock Text="{Binding Label}" FontSize="13" Margin="0,0,0,4" />
-                                                    <ComboBox ItemsSource="{Binding Choices}" SelectedItem="{Binding Selected, Mode=OneWay}" Tag="{Binding Ext}" SelectionChanged="OnProgramChosen"
-                                                              MinHeight="38" FontSize="14" AutomationProperties.Name="{Binding Label}" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                                    <!-- Craft files (pictures, PDFs, cut files, Word, zips, fonts) -->
+                                    <ItemsControl ItemsSource="{Binding CraftOpenWithRows}" ItemTemplate="{StaticResource OpenWithRow}" Focusable="False" />
+                                    <!-- Every other kind of file, out of the way until asked for -->
+                                    <Button Style="{StaticResource Btn.Plain}" Command="{Binding ToggleOtherTypes}" HorizontalAlignment="Left" Margin="0,4,0,10"
+                                            Visibility="{Binding HasOtherTypes, Converter={StaticResource Vis}}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding OtherTypesButton}" />
+                                            <c:Icon Size="16" Margin="8,0,0,0">
+                                                <c:Icon.Style>
+                                                    <Style TargetType="c:Icon">
+                                                        <Setter Property="Glyph" Value="{StaticResource Icon.ChevronDown}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ShowOtherTypes}" Value="True">
+                                                                <Setter Property="LayoutTransform">
+                                                                    <Setter.Value>
+                                                                        <RotateTransform Angle="180" />
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </c:Icon.Style>
+                                            </c:Icon>
+                                        </StackPanel>
+                                    </Button>
+                                    <Border BorderBrush="{DynamicResource B.border}" BorderThickness="2,0,0,0" Padding="12,0,0,0" Margin="0,0,0,6"
+                                            Visibility="{Binding ShowOtherTypes, Converter={StaticResource Vis}}">
+                                        <StackPanel>
+                                            <TextBlock Text="Other kinds of files found in your folders." Style="{StaticResource Muted}" Margin="0,0,0,8" />
+                                            <ItemsControl ItemsSource="{Binding OtherOpenWithRows}" ItemTemplate="{StaticResource OpenWithRow}" Focusable="False" />
+                                        </StackPanel>
+                                    </Border>
                                 </StackPanel>
                                 <Button Style="{StaticResource Btn.Link}" Content="Reset this section" Command="{Binding Reset}" HorizontalAlignment="Left" Margin="0,8,0,0" Visibility="{Binding Changed, Converter={StaticResource Vis}}" />
                             </StackPanel>

@@ -347,6 +347,11 @@ public sealed class FileKindTests
     [InlineData("scut4", FileKind.Vector)] [InlineData("7z", FileKind.Zip)] [InlineData("otf", FileKind.Font)] [InlineData("xyz", FileKind.Unknown)]
     public void Kinds(string ext, FileKind kind) => Assert.Equal(kind, FileKinds.KindFor(ext));
 
+    [Theory]
+    [InlineData("JPG", true)] [InlineData("psd", true)] [InlineData("studio3", true)] [InlineData("docx", true)] [InlineData("zip", true)] [InlineData("otf", true)]
+    [InlineData("xlsx", false)] [InlineData("exe", false)] [InlineData("mp4", false)] [InlineData("txt", false)] [InlineData("", false)]
+    public void Craft_file_types(string ext, bool craft) => Assert.Equal(craft, FileKinds.IsCraft(ext));
+
     [Fact]
     public void Sizes_read_like_before()
     {
