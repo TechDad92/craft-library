@@ -2,6 +2,10 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.8.0 (21 Nov 2026)
+Focus mode removed. The folder list and preview hide with a small arrow and come back with a tab at the window's edge
+(also Settings › Layout › Panels). See [docs/releases/0.8.0.md](docs/releases/0.8.0.md).
+
 ## 0.7.0 (21 Nov 2026)
 New versions: a quiet check when the app opens, a small note with Update now / See what's new / Not now, and
 Settings › Files & safety › New versions (Check now). See [docs/releases/0.7.0.md](docs/releases/0.7.0.md).

@@ -174,9 +174,8 @@ public sealed partial class MainViewModel
     public ICommand OpenSelected => Cmd.Of(() => { if (Selected != null) OpenFile(Selected, null); });
     public ICommand OpenTile => Cmd.Of(() => { if (SelectedTile != null) SetFolder(SelectedTile.Id); });
 
-    // ---------------- focus mode, menus ----------------
+    // ---------------- menus ----------------
 
-    public ICommand ToggleFocus => Cmd.Of(() => { Focus = !Focus; _toolbarInFocus = false; MenuOpen = false; HiddenMenuOpen = false; ColourOpen = false; RefreshAll(); });
     public ICommand ToggleMenu => Cmd.Of(() => { MenuOpen = !MenuOpen; HiddenMenuOpen = false; });
     public ICommand ToggleHiddenMenu => Cmd.Of(() => { HiddenMenuOpen = !HiddenMenuOpen; MenuOpen = false; });
     public ICommand OpenSettings => Cmd.Of(() => { MenuOpen = false; SettingsOpen = true; });
@@ -207,12 +206,14 @@ public sealed partial class MainViewModel
     // ---------------- preview position ----------------
     public ICommand PopOut => Cmd.Of(() => SetPreview("popout"));
     public ICommand DockPreview => Cmd.Of(() => SetPreview("right"));
-    public ICommand HidePreview => Cmd.Of(() => SetPreview("hidden"));
-    public ICommand ShowPreview => Cmd.Of(() => SetPreview("right"));
+    public ICommand HidePreview => Cmd.Of(() => { S.ShowPreview = false; SettingsChanged(); });
+    public ICommand TogglePreview => Cmd.Of(() => { S.ShowPreview = !S.ShowPreview; SettingsChanged(); });
+    public ICommand ToggleFolders => Cmd.Of(() => { S.ShowFolders = !S.ShowFolders; SettingsChanged(); });
 
     private void SetPreview(string where)
     {
         S.Preview = where;
+        S.ShowPreview = true;
         SettingsChanged();
     }
 

@@ -55,7 +55,7 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
         ("colours", "Colours", "Palette", ["Theme", "Accent", "Strength", "Tint"], "colours colors theme light dark accent pastel muted bold background tint"),
         ("style", "Background", "Layers", ["Texture"], "background pattern plain dots cutting mat pinstripe wash"),
         ("text", "Text & fonts", "TextAa", ["Fonts", "TextSize", "LineSpacing"], "text fonts font size line spacing reading dyslexic easy"),
-        ("layout", "Layout", "Layout", ["View", "Thumb", "Preview", "Sidebar", "Density", "ShowName", "ShowType", "ShowSize", "ShowDate", "Order", "BtnLabels", "ShowToolbar"], "layout grid list thumbnails thumbnail size preview panel window folder list spacing compact show name type date order icons words toolbar"),
+        ("layout", "Layout", "Layout", ["View", "Thumb", "Preview", "Sidebar", "Density", "ShowName", "ShowType", "ShowSize", "ShowDate", "Order", "BtnLabels", "ShowToolbar", "ShowFolders", "ShowPreview"], "layout grid list thumbnails thumbnail size preview panel window folder list spacing compact show name type date order icons words toolbar"),
         ("comfort", "Comfort & focus", "Heart", ["HighContrast", "ReduceMotion", "FadeMessages", "Tips", "ShowProgress", "Remember"], "comfort focus contrast motion messages fade hover explain progress remember left off"),
         ("files", "Files & safety", "Shield", ["AskRecycle", "ShowBadges", "CheckUpdates", "OpenWith", "HiddenExts"], "files safety recycle remove ask sure duplicates badges open programs program hide hidden kinds types update updates new version"),
         ("features", "Buttons & features", "Toggles", ["Features"], "buttons features hide hidden show off turn"),
@@ -81,7 +81,7 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
             }
             case "layout":
                 return (S.View == "grid" ? "Grid" : "List") + " · " + (S.Thumb switch { "s" => "small", "l" => "large", "xl" => "extra large", _ => "medium" }) + " thumbnails · "
-                    + (S.Preview switch { "bottom" => "preview at the bottom", "popout" => "preview in its own window", "hidden" => "preview hidden", _ => "preview on the right" });
+                    + (!S.ShowPreview ? "preview hidden" : S.Preview switch { "bottom" => "preview at the bottom", "popout" => "preview in its own window", _ => "preview on the right" });
             case "comfort":
             {
                 var n = new[] { S.HighContrast, S.ReduceMotion, S.FadeMessages, S.Tips, S.ShowProgress, S.Remember }.Count(b => b);
@@ -238,13 +238,18 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
     // ---------------- Layout ----------------
     public List<OptionVm> View => Seg(S.View, ("grid", "Grid of thumbnails", s => s.View = "grid"), ("list", "List with details", s => s.View = "list"));
     public List<OptionVm> Thumb => Seg(S.Thumb, ("s", "Small", s => s.Thumb = "s"), ("m", "Medium", s => s.Thumb = "m"), ("l", "Large", s => s.Thumb = "l"), ("xl", "Extra large", s => s.Thumb = "xl"));
-    public List<OptionVm> Preview => Seg(S.Preview, ("right", "Right side", s => s.Preview = "right"), ("bottom", "Bottom", s => s.Preview = "bottom"), ("popout", "Own window", s => s.Preview = "popout"), ("hidden", "Hidden", s => s.Preview = "hidden"));
+    public List<OptionVm> Preview => Seg(S.ShowPreview ? S.Preview : "",
+        ("right", "Right side", s => { s.Preview = "right"; s.ShowPreview = true; }),
+        ("bottom", "Bottom", s => { s.Preview = "bottom"; s.ShowPreview = true; }),
+        ("popout", "Own window", s => { s.Preview = "popout"; s.ShowPreview = true; }));
     public List<OptionVm> Sidebar => Seg(S.Sidebar, ("left", "Left", s => s.Sidebar = "left"), ("right", "Right", s => s.Sidebar = "right"));
     public List<OptionVm> Density => Seg(S.Density, ("comfortable", "Standard", s => s.Density = "comfortable"), ("compact", "Compact", s => s.Density = "compact"), ("spacious", "Spacious", s => s.Density = "spacious"));
     public List<OptionVm> Order => Seg(S.Order, ("name", "Name", s => s.Order = "name"), ("added", "Newest first", s => s.Order = "added"), ("type", "File type", s => s.Order = "type"), ("size", "Largest first", s => s.Order = "size"));
     public List<OptionVm> BtnLabels => Seg(S.BtnLabels, ("both", "Icons and words", s => s.BtnLabels = "both"), ("words", "Words only", s => s.BtnLabels = "words"), ("icons", "Icons only", s => s.BtnLabels = "icons"));
-    public List<CheckVm> ToolbarCheck =>
+    public List<CheckVm> PanelChecks =>
     [
+        new() { Label = "Show the folder list", Help = "You can also hide it with the small arrow at its top, and bring it back with the tab at the edge of the window.", On = S.ShowFolders, Toggle = SetCmd(s => s.ShowFolders = !s.ShowFolders) },
+        new() { Label = "Show the preview", Help = "The big picture and details of the file you click. You can also hide it with its small arrow, and bring it back with the tab at the edge of the window.", On = S.ShowPreview, Toggle = SetCmd(s => s.ShowPreview = !s.ShowPreview) },
         new() { Label = "Show the toolbar", Help = "The row of buttons under the top banner: Back, Undo, Duplicates, Settings and more. You can also hide it with the small arrow at its right-hand end, and bring it back with the tab at the top of the window.", On = S.ShowToolbar, Toggle = SetCmd(s => s.ShowToolbar = !s.ShowToolbar) },
     ];
 

@@ -151,12 +151,6 @@
                                 <TextBlock Text="{Binding ColourButtonText}" />
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource Btn.Plain}" Command="{Binding ShowPreview}" Visibility="{Binding PreviewHidden, Converter={StaticResource Vis}}">
-                            <StackPanel Orientation="Horizontal">
-                                <c:Icon Glyph="{StaticResource Icon.Window}" Size="18" Margin="0,0,8,0" Visibility="{DynamicResource V.btnIcon}" />
-                                <TextBlock Text="Show preview" Visibility="{DynamicResource V.btnWord}" />
-                            </StackPanel>
-                        </Button>
                     </WrapPanel>
 
                     <!-- Note on this folder -->

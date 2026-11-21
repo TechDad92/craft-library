@@ -16,8 +16,8 @@ under her control: nothing happens to a file unless she chooses it, and everythi
 - Finds exact duplicate files, even when their names are different
 - Notes and colour labels on folders, notes on files
 - Install font files with one click
-- Lots of ways to make it comfortable: light or dark, colours, easy-reading fonts, text size, Focus mode,
-  hiding kinds of files you'd rather not see
+- Lots of ways to make it comfortable: light or dark, colours, easy-reading fonts, text size, hiding the folder list,
+  preview or toolbar, hiding kinds of files you'd rather not see
 - A short setup guide the first time it opens
 
 ## Installing it

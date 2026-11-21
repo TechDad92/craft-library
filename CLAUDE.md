@@ -4,7 +4,7 @@ A Windows desktop app that helps the user's mum organise thousands of craft file
 patterned papers (JPG/PNG/PSD), SVG/DXF/EPS/Silhouette cut files, Word documents that hold a paper
 image, PDFs, zip bundles and fonts. It's a file manager first, with sorting tools added on.
 
-Current version: **0.7.0**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
+Current version: **0.8.0**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
 The Electron version is in `legacy-electron/` for reference only. Do not change it.
 
 ## Who it's for: these rules matter
@@ -54,13 +54,15 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
     Banner layout: logo and name left | search centred on the window (equal side columns) | window buttons right.
     **Keep the top bar to just those** (her choice). The toolbar is hidden by a small chevron at its right end and
     brought back by a slim tab hanging under the middle of the top bar (`MainWindow.xaml`, row 2, ZIndex 5).
-    Focus mode hides the toolbar too; the tab shows it for that Focus session only (`_toolbarInFocus`), without
-    changing `Settings.ShowToolbar`.
+    The folder list and preview work the same way (0.8.0, which removed Focus mode): a small arrow in the panel hides it
+    (`Settings.ShowFolders` / `ShowPreview`), and a slim tab docked at that edge of the window brings it back
+    (`EdgeTab` style in `MainWindow.xaml`; the preview's tab is on the bottom edge when the preview is at the bottom).
+    While there is no craft folder yet the folder list always shows (it holds "Choose craft folder").
     `FitSearchBox()` narrows the search box (480 → 160) on small windows.
   - There is no Menu button any more (removed in 0.6.0). Toolbar (row under the banner, `Settings.ShowToolbar`):
     left = Back/Forward (place history `_back`/`_forward`; call `Remember()` before going
     somewhere new), Undo/Redo (`_redo`; `Record()` clears it unless it is a redo), Duplicates, History; right =
-    progress, Hidden, Grid/List, Order by, Focus mode, Settings. On narrow windows `FitToolbar()` moves the right group
+    progress, Hidden, Grid/List, Order by, Settings. On narrow windows `FitToolbar()` moves the right group
     onto a second line.
   - Right-click menus are built in code each time (`FilesView.xaml.cs`: `FileMenu`, `FolderMenu`), so they only
     show what applies and respect the feature switches. Styled by the implicit `ContextMenu`/`MenuItem` styles.

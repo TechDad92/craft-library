@@ -215,8 +215,8 @@
                                     <ItemsControl Style="{StaticResource SegList}" ItemsSource="{Binding Order}" />
                                     <TextBlock Text="Main buttons show" Style="{StaticResource Label}" />
                                     <ItemsControl Style="{StaticResource SegList}" ItemsSource="{Binding BtnLabels}" />
-                                    <TextBlock Text="Toolbar" Style="{StaticResource Label}" />
-                                    <ItemsControl ItemsSource="{Binding ToolbarCheck}" ItemTemplate="{StaticResource CheckRow}" Focusable="False" />
+                                    <TextBlock Text="Panels" Style="{StaticResource Label}" />
+                                    <ItemsControl ItemsSource="{Binding PanelChecks}" ItemTemplate="{StaticResource CheckRow}" Focusable="False" />
                                 </StackPanel>
                                 <Button Style="{StaticResource Btn.Link}" Content="Reset this section" Command="{Binding Reset}" HorizontalAlignment="Left" Margin="0,8,0,0" Visibility="{Binding Changed, Converter={StaticResource Vis}}" />
                             </StackPanel>

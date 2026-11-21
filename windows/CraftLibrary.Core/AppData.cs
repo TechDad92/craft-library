@@ -22,7 +22,11 @@ public sealed class Settings
     // Layout
     public string View { get; set; } = "grid";               // grid | list
     public string Thumb { get; set; } = "m";                 // s | m | l | xl
-    public string Preview { get; set; } = "right";           // right | bottom | popout | hidden
+    public string Preview { get; set; } = "right";           // right | bottom | popout
+    /// <summary>The folder list. Hidden with the small arrow at its top, brought back with the tab at the window's edge.</summary>
+    public bool ShowFolders { get; set; } = true;
+    /// <summary>The preview panel (wherever it is). Hidden with its small arrow, brought back with the tab at the window's edge.</summary>
+    public bool ShowPreview { get; set; } = true;
     public string Sidebar { get; set; } = "left";            // left | right
     public string Density { get; set; } = "comfortable";     // comfortable | compact | spacious
     public bool ShowName { get; set; } = true;
@@ -62,7 +66,7 @@ public sealed class Settings
         ("search", "Search box"), ("move", "Move to…"), ("rename", "Rename"), ("recycle", "Send to Recycle Bin"),
         ("open", "Open button"), ("explorer", "Show in File Explorer"), ("dupes", "Duplicates"), ("undo", "Undo"),
         ("inbox", "To sort folder"), ("addloc", "Add location"), ("recyclecount", "Recycle Bin count"),
-        ("focus", "Focus mode button"), ("later", "Sort later pile"), ("notes", "Notes on files and folders"),
+        ("later", "Sort later pile"), ("notes", "Notes on files and folders"),
         ("labels", "Folder colour labels"), ("history", "History")
     ];
 
@@ -87,6 +91,10 @@ public sealed class Settings
         foreach (var (k, _) in FontSections) Fonts.TryAdd(k, "figtree");
         Features ??= DefaultFeatures();
         foreach (var (k, _) in FeatureList) Features.TryAdd(k, "show");
+        Features.Remove("focus"); // Focus mode was taken out in 0.8.0
+        // Before 0.8.0 "hidden" was one of the preview positions; now hiding is separate, so the position is kept.
+        if (Preview == "hidden") { Preview = "right"; ShowPreview = false; }
+        if (Preview is not ("right" or "bottom" or "popout")) Preview = "right";
         OpenWith = new Dictionary<string, string>(OpenWith ?? [], StringComparer.OrdinalIgnoreCase);
         HiddenExts = (HiddenExts ?? []).Where(e => !string.IsNullOrWhiteSpace(e)).Select(e => e.Trim().TrimStart('.').ToLowerInvariant()).Distinct().ToList();
     }

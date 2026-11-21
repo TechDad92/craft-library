@@ -298,6 +298,19 @@ public sealed class DataTests : IDisposable
         Assert.Equal("show", d.Settings.Feature("history"));
         Assert.Equal("figtree", d.Settings.Fonts["preview"]);
     }
+
+    [Fact]
+    public void Old_hidden_preview_and_focus_button_are_brought_up_to_date()
+    {
+        var file = Path.Combine(t.Root, "data.json");
+        File.WriteAllText(file, """{ "settings": { "preview": "hidden", "features": { "focus": "hide" } } }""");
+        var d = AppData.Load(file);
+        Assert.Equal("right", d.Settings.Preview);
+        Assert.False(d.Settings.ShowPreview);
+        Assert.True(d.Settings.ShowFolders);
+        Assert.False(d.Settings.Features.ContainsKey("focus"));
+        Assert.Equal(Settings.DefaultFeatures(), d.Settings.Features); // so "Reset this section" doesn't show for nothing
+    }
 }
 
 public sealed class PaletteTests

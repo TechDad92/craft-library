@@ -15,7 +15,6 @@ public sealed partial class MainViewModel
     [ObservableProperty] private FileItemVm? _selected;
     [ObservableProperty] private FolderTileVm? _selectedTile;
     [ObservableProperty] private bool _isSetup;
-    [ObservableProperty] private bool _focus;
     [ObservableProperty] private bool _scanning;
     [ObservableProperty] private bool _dupScanning;
     [ObservableProperty] private bool _scanCapped;
@@ -142,19 +141,10 @@ public sealed partial class MainViewModel
     public bool ViewIsList => S.View == "list";
     public ICommand ShowAsGrid => Cmd.Of(() => { if (S.View != "grid") { S.View = "grid"; SettingsChanged(); } });
     public ICommand ShowAsList => Cmd.Of(() => { if (S.View != "list") { S.View = "list"; SettingsChanged(); } });
-    /// <summary>
-    /// Focus mode hides the toolbar too. Pulling it down with the tab during Focus mode only shows it for that
-    /// Focus session; her saved "Show the toolbar" choice is used again when Focus mode ends.
-    /// </summary>
-    private bool _toolbarInFocus;
+    /// <summary>The toolbar, folder list and preview each hide with a small arrow and come back with a tab at the window's edge.</summary>
+    public bool ToolbarVisible => S.ShowToolbar;
 
-    public bool ToolbarVisible => Focus ? _toolbarInFocus : S.ShowToolbar;
-
-    public ICommand ToggleToolbar => Cmd.Of(() =>
-    {
-        if (Focus) { _toolbarInFocus = !_toolbarInFocus; RefreshAll(); }
-        else { S.ShowToolbar = !S.ShowToolbar; SettingsChanged(); }
-    });
+    public ICommand ToggleToolbar => Cmd.Of(() => { S.ShowToolbar = !S.ShowToolbar; SettingsChanged(); });
     public ICommand ToggleSettings => Cmd.Of(() => { MenuOpen = false; SettingsOpen = !SettingsOpen; });
     public bool ShowNavTools => !IsSetup;
     public bool ShowViewControls => View == "browse";
@@ -270,18 +260,17 @@ public sealed partial class MainViewModel
     private IEnumerable<FolderDef> ActiveFolders() => _folderDefs.Where(f => !f.IsRoot);
 
     // ---------------- banner ----------------
-    public bool ShowSearch => !Focus && S.Shows("search") && !IsSetup;
+    public bool ShowSearch => S.Shows("search") && !IsSetup;
     public bool ShowHome => !IsSetup && View != "browse";
     public int DupGroupCount => Shown.Where(i => i.Dup.Length > 0).GroupBy(i => i.Dup).Count(g => g.Count() > 1);
     public bool HasDupGroups => DupGroupCount > 0;
     public bool CanUndo => History.Count > 0;
     public string UndoHint => History.Count > 0 ? History[^1].Msg : "Nothing to undo yet";
-    public string FocusState => Focus ? "On" : "Off";
-    public bool ShowProgressPill => S.ShowProgress && !IsSetup && !Focus;
+    public bool ShowProgressPill => S.ShowProgress && !IsSetup;
     public string ProgressText { get { var n = Data.SortedPerDay.GetValueOrDefault(DateTime.Now.ToString("yyyy-MM-dd")); return n + (n == 1 ? " file sorted today" : " files sorted today"); } }
     public List<HiddenFeatureVm> HiddenFeatures => Settings.FeatureList.Where(f => S.Feature(f.Key) == "hide")
         .Select(f => new HiddenFeatureVm { Label = f.Label, Show = Cmd.Of(() => SetFeature(f.Key, "show")) }).ToList();
-    public bool HasHiddenShown => HiddenFeatures.Count > 0 && !Focus;
+    public bool HasHiddenShown => HiddenFeatures.Count > 0;
     public string HiddenCount => HiddenFeatures.Count.ToString();
     public bool Feat(string key) => S.Shows(key);
     // One property per feature, so the screens can show or hide each one.
@@ -295,7 +284,6 @@ public sealed partial class MainViewModel
     public bool FeatInbox => S.Shows("inbox");
     public bool FeatAddLoc => S.Shows("addloc");
     public bool FeatRecycleCount => S.Shows("recyclecount");
-    public bool FeatFocus => S.Shows("focus");
     public bool FeatLater => S.Shows("later");
     public bool FeatNotes => S.Shows("notes");
     public bool FeatLabels => S.Shows("labels");
@@ -304,7 +292,9 @@ public sealed partial class MainViewModel
 
     // ---------------- folder list (left) ----------------
     public List<SideRow> SideRows { get; private set; } = [];
-    public bool ShowSidebar => !Focus;
+    // While there's no craft folder yet, the folder list holds the "Choose craft folder" button, so it always shows.
+    public bool ShowSidebar => S.ShowFolders || IsSetup;
+    public bool FoldersTab => !ShowSidebar;
     public bool SidebarRight => S.Sidebar == "right";
     public bool InboxActive => Q.Length == 0 && View == "browse" && Folder == Unsorted;
     public bool LaterActive => Q.Length == 0 && View == "browse" && Folder == LaterPile;
@@ -396,20 +386,21 @@ public sealed partial class MainViewModel
         }
     }
 
-    public bool FolderExtras => Q.Length == 0 && CurrentFolder is { } f && f.Loc != "virtual" && !Focus;
+    public bool FolderExtras => Q.Length == 0 && CurrentFolder is { } f && f.Loc != "virtual";
     public string FolderNote => Data.FolderNotes.GetValueOrDefault(Folder, "");
     public bool ShowFolderNote => FolderNote.Length > 0 && !EditingFolderNote && FeatNotes;
     public string FolderNoteButton => FolderNote.Length > 0 ? "Edit note" : "Add note";
     public string CurrentColour => Data.FolderColors.GetValueOrDefault(Folder, "");
     public string ColourButtonText => CurrentColour.Length > 0 ? Palette.LabelName(CurrentColour) + " label" : "Colour label";
-    public bool ShowInboxHint => Q.Length == 0 && Folder == Unsorted && !Data.InboxHintHidden && Visible().Count > 0 && !Focus;
-    public bool PreviewHidden => S.Preview == "hidden";
+    public bool ShowInboxHint => Q.Length == 0 && Folder == Unsorted && !Data.InboxHintHidden && Visible().Count > 0;
 
     // ---------------- preview (right or bottom) ----------------
-    public bool ShowPreviewPanel => S.Preview is "right" or "bottom" && !IsSetup && View == "browse";
+    public bool ShowPreviewPanel => S.ShowPreview && (S.Preview is "right" or "bottom") && !IsSetup && View == "browse";
+    /// <summary>The tab that brings the preview back: on the right edge, or the bottom edge when the preview lives there.</summary>
+    public bool PreviewTab => !S.ShowPreview && !IsSetup && View == "browse";
     public bool PreviewRight => S.Preview == "right";
     public bool PreviewBottom => S.Preview == "bottom";
-    public bool PreviewPopout => S.Preview == "popout" && !IsSetup;
+    public bool PreviewPopout => S.ShowPreview && S.Preview == "popout" && !IsSetup;
     public bool HasSel => Selected != null && SelectedTile == null;
     public bool NoSel => Selected == null && SelectedTile == null;
     public bool HasTileSel => SelectedTile != null;

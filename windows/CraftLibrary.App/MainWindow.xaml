@@ -13,6 +13,30 @@
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="76" ResizeBorderThickness="6" GlassFrameThickness="0,0,0,1" CornerRadius="0" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
+    <Window.Resources>
+        <!-- A slim tab at the edge of the window that brings a hidden panel back (like the one under the top bar for the toolbar).
+             Tag holds the rounded corners, BorderThickness leaves the edge side open. -->
+        <Style x:Key="EdgeTab" TargetType="Button">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusRing}" />
+            <Setter Property="ToolTipService.IsEnabled" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Tab" Background="{DynamicResource B.chrome}" BorderBrush="{DynamicResource B.divider}" BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Tab" Property="Background" Value="{DynamicResource B.accent-soft}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid TextBlock.LineHeight="{DynamicResource LineHeight}">
         <!-- Background pattern (Settings › Background), behind everything. -->
         <Rectangle Fill="{DynamicResource B.texture}" IsHitTestVisible="False" />
@@ -134,7 +158,7 @@
                         </Button>
                     </StackPanel>
 
-                    <!-- Right: occasional bits, view controls, then Focus mode and Settings -->
+                    <!-- Right: occasional bits, view controls, then Settings -->
                     <StackPanel x:Name="ToolRight" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                         <Border Visibility="{Binding ShowProgressPill, Converter={StaticResource Vis}}" Background="{DynamicResource B.panel}" CornerRadius="999" Padding="14,8" Margin="0,0,10,0" VerticalAlignment="Center">
                             <StackPanel Orientation="Horizontal">
@@ -190,12 +214,6 @@
                             <ComboBox ItemsSource="{Binding OrderChoices}" SelectedItem="{Binding OrderChoice}" Width="160" MinHeight="36" FontSize="14" AutomationProperties.Name="Order files by" />
                         </StackPanel>
                         <Rectangle Width="1" Height="26" Fill="{DynamicResource B.border}" Margin="6,0,14,0" />
-                        <Button Style="{StaticResource Btn.ToolSeg}" Command="{Binding ToggleFocus}" c:Ui.Active="{Binding Focus}" ToolTip="Hide the folder list, search and toolbar so you can concentrate on the files. Pull the toolbar back down with the tab at the top." Visibility="{Binding FeatFocus, Converter={StaticResource Vis}}" AutomationProperties.Name="Focus mode">
-                            <StackPanel Orientation="Horizontal">
-                                <c:Icon Glyph="{StaticResource Icon.Focus}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
-                                <TextBlock Text="Focus mode" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
-                            </StackPanel>
-                        </Button>
                         <Button Style="{StaticResource Btn.ToolSeg}" Command="{Binding ToggleSettings}" c:Ui.Active="{Binding SettingsOpen}" ToolTip="Change how the app looks and works" AutomationProperties.Name="Settings">
                             <StackPanel Orientation="Horizontal">
                                 <c:Icon Glyph="{StaticResource Icon.Sliders}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
@@ -218,8 +236,85 @@
             <DockPanel Grid.Row="2" LastChildFill="True">
                 <v:SidebarView DockPanel.Dock="{Binding SidebarRight, Converter={StaticResource SideIf}, ConverterParameter='Right|Left'}"
                                Visibility="{Binding ShowSidebar, Converter={StaticResource Vis}}" />
+                <!-- Folder list hidden: a slim tab half-way down its edge brings it back -->
+                <Button DockPanel.Dock="{Binding SidebarRight, Converter={StaticResource SideIf}, ConverterParameter='Right|Left'}" VerticalAlignment="Center"
+                        Width="22" Height="72" Command="{Binding ToggleFolders}" Visibility="{Binding FoldersTab, Converter={StaticResource Vis}}"
+                        ToolTip="Show the folder list" AutomationProperties.Name="Show the folder list">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource EdgeTab}">
+                            <Setter Property="Tag" Value="0,12,12,0" />
+                            <Setter Property="BorderThickness" Value="0,1.5,1.5,1.5" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SidebarRight}" Value="True">
+                                    <Setter Property="Tag" Value="12,0,0,12" />
+                                    <Setter Property="BorderThickness" Value="1.5,1.5,0,1.5" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <c:Icon Glyph="{StaticResource Icon.ChevronRight}" Size="16" Foreground="{DynamicResource B.chrome-muted}">
+                        <c:Icon.Style>
+                            <Style TargetType="c:Icon">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SidebarRight}" Value="True">
+                                        <Setter Property="LayoutTransform">
+                                            <Setter.Value>
+                                                <RotateTransform Angle="180" />
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </c:Icon.Style>
+                    </c:Icon>
+                </Button>
                 <v:PreviewView DockPanel.Dock="{Binding PreviewBottom, Converter={StaticResource SideIf}, ConverterParameter='Bottom|Right'}"
                                Visibility="{Binding ShowPreviewPanel, Converter={StaticResource Vis}}" />
+                <!-- Preview hidden: a slim tab half-way down the right edge (or in the middle of the bottom edge) brings it back -->
+                <Button DockPanel.Dock="{Binding PreviewBottom, Converter={StaticResource SideIf}, ConverterParameter='Bottom|Right'}"
+                        Command="{Binding TogglePreview}" Visibility="{Binding PreviewTab, Converter={StaticResource Vis}}"
+                        ToolTip="Show the preview" AutomationProperties.Name="Show the preview">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource EdgeTab}">
+                            <Setter Property="Tag" Value="12,0,0,12" />
+                            <Setter Property="BorderThickness" Value="1.5,1.5,0,1.5" />
+                            <Setter Property="Width" Value="22" />
+                            <Setter Property="Height" Value="72" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding PreviewBottom}" Value="True">
+                                    <Setter Property="Tag" Value="12,12,0,0" />
+                                    <Setter Property="BorderThickness" Value="1.5,1.5,1.5,0" />
+                                    <Setter Property="Width" Value="72" />
+                                    <Setter Property="Height" Value="22" />
+                                    <Setter Property="VerticalAlignment" Value="Bottom" />
+                                    <Setter Property="HorizontalAlignment" Value="Center" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <c:Icon Glyph="{StaticResource Icon.ChevronRight}" Size="16" Foreground="{DynamicResource B.chrome-muted}">
+                        <c:Icon.Style>
+                            <Style TargetType="c:Icon">
+                                <!-- Points back into the window: left, or up from the bottom -->
+                                <Setter Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="180" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding PreviewBottom}" Value="True">
+                                        <Setter Property="LayoutTransform">
+                                            <Setter.Value>
+                                                <RotateTransform Angle="-90" />
+                                            </Setter.Value>
+                                        </Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </c:Icon.Style>
+                    </c:Icon>
+                </Button>
                 <Grid>
                     <v:FilesView Visibility="{Binding ShowFiles, Converter={StaticResource Vis}}" />
                     <!-- First visit -->

@@ -95,7 +95,7 @@ public sealed class SideIf : IValueConverter
     public object Convert(object? value, Type t, object? p, CultureInfo c)
     {
         var parts = ((p as string) ?? "Right|Left").Split('|');
-        return Enum.Parse(typeof(Dock), value is true ? parts[0] : parts[1]);
+        return Enum.Parse(t.IsEnum ? t : typeof(Dock), value is true ? parts[0] : parts[1]);
     }
 
     public object ConvertBack(object? v, Type t, object? p, CultureInfo c) => throw new NotSupportedException();
