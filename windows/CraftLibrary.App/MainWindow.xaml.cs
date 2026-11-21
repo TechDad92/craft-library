@@ -28,6 +28,9 @@ public partial class MainWindow : Window
         Banner.SizeChanged += (_, _) => { SyncCaptionHeight(); FitSearchBox(); };
         BannerLeft.SizeChanged += (_, _) => FitSearchBox();
         BannerRight.SizeChanged += (_, _) => FitSearchBox();
+        Toolbar.SizeChanged += (_, _) => FitToolbar();
+        ToolLeft.SizeChanged += (_, _) => FitToolbar();
+        ToolRight.SizeChanged += (_, _) => FitToolbar();
     }
 
     // ---------------- the banner is the title bar ----------------
@@ -60,6 +63,23 @@ public partial class MainWindow : Window
         var room = width - 2 * side - 16;
         var w = Math.Clamp(room, 160, 480);
         if (Math.Abs(SearchArea.Width - w) > 0.5) SearchArea.Width = w;
+    }
+
+    /// <summary>
+    /// The toolbar's right-hand group sits on the same line when there's room, and moves onto a second line
+    /// (lined up on the left) when the window is too narrow, so no button is ever cut off.
+    /// </summary>
+    private void FitToolbar()
+    {
+        if (Toolbar.ActualWidth <= 0) return;
+        var left = ToolLeft.Visibility == Visibility.Visible ? ToolLeft.DesiredSize.Width : 0;
+        var twoLines = left + ToolRight.DesiredSize.Width + 16 > Toolbar.ActualWidth;
+        if (twoLines == (Grid.GetRow(ToolRight) == 1)) return;
+        Grid.SetRow(ToolRight, twoLines ? 1 : 0);
+        Grid.SetColumn(ToolRight, twoLines ? 0 : 1);
+        Grid.SetColumnSpan(ToolRight, twoLines ? 2 : 1);
+        ToolRight.HorizontalAlignment = twoLines ? HorizontalAlignment.Left : HorizontalAlignment.Right;
+        ToolRight.Margin = new Thickness(0, twoLines ? 8 : 0, 0, 0);
     }
 
     /// <summary>The draggable strip is exactly as tall as the banner (which grows with the text size setting).</summary>

@@ -55,7 +55,7 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
         ("colours", "Colours", "Palette", ["Theme", "Accent", "Strength", "Tint"], "colours colors theme light dark accent pastel muted bold background tint"),
         ("style", "Background", "Layers", ["Texture"], "background pattern plain dots cutting mat pinstripe wash"),
         ("text", "Text & fonts", "TextAa", ["Fonts", "TextSize", "LineSpacing"], "text fonts font size line spacing reading dyslexic easy"),
-        ("layout", "Layout", "Layout", ["View", "Thumb", "Preview", "Sidebar", "Density", "ShowName", "ShowType", "ShowSize", "ShowDate", "Order", "BtnLabels"], "layout grid list thumbnails thumbnail size preview panel window folder list spacing compact show name type date order icons words"),
+        ("layout", "Layout", "Layout", ["View", "Thumb", "Preview", "Sidebar", "Density", "ShowName", "ShowType", "ShowSize", "ShowDate", "Order", "BtnLabels", "ShowToolbar"], "layout grid list thumbnails thumbnail size preview panel window folder list spacing compact show name type date order icons words toolbar"),
         ("comfort", "Comfort & focus", "Heart", ["HighContrast", "ReduceMotion", "FadeMessages", "Tips", "ShowProgress", "Remember"], "comfort focus contrast motion messages fade hover explain progress remember left off"),
         ("files", "Files & safety", "Shield", ["AskRecycle", "ShowBadges", "OpenWith", "HiddenExts"], "files safety recycle remove ask sure duplicates badges open programs program hide hidden kinds types"),
         ("features", "Buttons & features", "Toggles", ["Features"], "buttons features hide hidden show off turn"),
@@ -243,6 +243,11 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
     public List<OptionVm> Density => Seg(S.Density, ("comfortable", "Standard", s => s.Density = "comfortable"), ("compact", "Compact", s => s.Density = "compact"), ("spacious", "Spacious", s => s.Density = "spacious"));
     public List<OptionVm> Order => Seg(S.Order, ("name", "Name", s => s.Order = "name"), ("added", "Newest first", s => s.Order = "added"), ("type", "File type", s => s.Order = "type"), ("size", "Largest first", s => s.Order = "size"));
     public List<OptionVm> BtnLabels => Seg(S.BtnLabels, ("both", "Icons and words", s => s.BtnLabels = "both"), ("words", "Words only", s => s.BtnLabels = "words"), ("icons", "Icons only", s => s.BtnLabels = "icons"));
+    public List<CheckVm> ToolbarCheck =>
+    [
+        new() { Label = "Show the toolbar", Help = "The row of buttons under the top banner: Back, Undo, Duplicates, Settings and more. You can also hide or show it with the button at the top.", On = S.ShowToolbar, Toggle = SetCmd(s => s.ShowToolbar = !s.ShowToolbar) },
+    ];
+
     public List<CheckVm> ShowWith =>
     [
         new() { Label = "Name", On = S.ShowName, Toggle = SetCmd(s => s.ShowName = !s.ShowName) },

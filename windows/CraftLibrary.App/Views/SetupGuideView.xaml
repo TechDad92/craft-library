@@ -223,7 +223,7 @@
                             <TextBlock Style="{StaticResource Intro}" Text="When you double-click a file, which program should open it? These are the kinds of craft file found in your folder." />
                             <TextBlock Style="{StaticResource Help}" Margin="0,0,0,16" Text="“Windows’ choice” means the program your computer already uses for that kind of file. That’s usually right, so only change one if you’d like a different program." />
                             <Border Background="{DynamicResource B.subtle}" CornerRadius="12" Padding="14,12" Visibility="{Binding HasCraftTypes, Converter={StaticResource Vis}, ConverterParameter=not}">
-                                <TextBlock FontSize="15" TextWrapping="Wrap" Text="No craft files were found in your folder yet, so there’s nothing to choose here. You can do this later in Menu › Settings, under “Files &amp; safety”." />
+                                <TextBlock FontSize="15" TextWrapping="Wrap" Text="No craft files were found in your folder yet, so there’s nothing to choose here. You can do this later in Settings (on the toolbar), under “Files &amp; safety”." />
                             </Border>
                             <ItemsControl ItemsSource="{Binding OpenWithRows}" Focusable="False">
                                 <ItemsControl.ItemTemplate>
@@ -244,7 +244,7 @@
                             <TextBlock Style="{StaticResource Intro}" Text="Folders often have other things in them, like spreadsheets or programs. Tick any kinds of file you’d rather not see in Craft Library." />
                             <TextBlock Style="{StaticResource Help}" Margin="0,0,0,16" Text="Hidden files stay safely in their folders: they’re just out of sight. You can show them again any time in Settings." />
                             <Border Background="{DynamicResource B.subtle}" CornerRadius="12" Padding="14,12" Visibility="{Binding HasHideRows, Converter={StaticResource Vis}, ConverterParameter=not}">
-                                <TextBlock FontSize="15" TextWrapping="Wrap" Text="No files were found in your folder yet, so there’s nothing to hide. You can do this later in Menu › Settings, under “Files &amp; safety”." />
+                                <TextBlock FontSize="15" TextWrapping="Wrap" Text="No files were found in your folder yet, so there’s nothing to hide. You can do this later in Settings (on the toolbar), under “Files &amp; safety”." />
                             </Border>
                             <ItemsControl ItemsSource="{Binding HideRows}" ItemTemplate="{StaticResource CheckRow}" Focusable="False" />
                         </StackPanel>
@@ -273,7 +273,7 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
-                            <TextBlock Style="{StaticResource Help}" Margin="0,18,0,0" Text="Tip: everything here is also in Menu › Settings, any time you’d like to change it." />
+                            <TextBlock Style="{StaticResource Help}" Margin="0,18,0,0" Text="Tip: everything here is also in Settings (on the toolbar), any time you’d like to change it." />
                         </StackPanel>
                     </Grid>
                 </ScrollViewer>
