@@ -2,6 +2,10 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.8.2 (21 Nov 2026)
+The toolbar matches the panels: one tab under its middle hides and shows it (the arrow at its right end has gone).
+See [docs/releases/0.8.2.md](docs/releases/0.8.2.md).
+
 ## 0.8.1 (21 Nov 2026)
 One chevron tab half-way down the folder list's and preview's edge both hides and shows them (no arrows inside the
 panels any more). See [docs/releases/0.8.1.md](docs/releases/0.8.1.md).

@@ -4,7 +4,7 @@ A Windows desktop app that helps the user's mum organise thousands of craft file
 patterned papers (JPG/PNG/PSD), SVG/DXF/EPS/Silhouette cut files, Word documents that hold a paper
 image, PDFs, zip bundles and fonts. It's a file manager first, with sorting tools added on.
 
-Current version: **0.8.1**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
+Current version: **0.8.2**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
 The Electron version is in `legacy-electron/` for reference only. Do not change it.
 
 ## Who it's for: these rules matter
@@ -52,8 +52,9 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
     so anything clickable in it needs `WindowChrome.IsHitTestVisibleInChrome="True"`. Minimise/maximise/close are
     `Btn.Caption` buttons; `MainWindow.xaml.cs` handles `WM_GETMINMAXINFO` so maximised fills the work area.
     Banner layout: logo and name left | search centred on the window (equal side columns) | window buttons right.
-    **Keep the top bar to just those** (her choice). The toolbar is hidden by a small chevron at its right end and
-    brought back by a slim tab hanging under the middle of the top bar (`MainWindow.xaml`, row 2, ZIndex 5).
+    **Keep the top bar to just those** (her choice). The toolbar has one slim chevron tab hanging under its middle
+    (`MainWindow.xaml`, row 2, ZIndex 5, always shown): it hides the toolbar, then hangs under the top bar to bring it back
+    (coloured like whatever it hangs from; `ToolbarTabAngle`).
     The folder list and preview (Focus mode was removed in 0.8.0) each have one slim chevron tab, half-way down the
     panel's inner edge (`EdgeTab` style in `MainWindow.xaml`, docked next to the panel). It hides the panel
     (`Settings.ShowFolders` / `ShowPreview`) and then sits at the window's edge to bring it back; the arrow turns

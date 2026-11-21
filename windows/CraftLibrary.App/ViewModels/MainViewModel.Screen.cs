@@ -143,6 +143,8 @@ public sealed partial class MainViewModel
     public ICommand ShowAsList => Cmd.Of(() => { if (S.View != "list") { S.View = "list"; SettingsChanged(); } });
     /// <summary>The toolbar, folder list and preview each hide with a small arrow and come back with a tab at the window's edge.</summary>
     public bool ToolbarVisible => S.ShowToolbar;
+    public double ToolbarTabAngle => S.ShowToolbar ? 180 : 0;
+    public string ToolbarTabHint => S.ShowToolbar ? "Hide the toolbar" : "Show the toolbar";
 
     public ICommand ToggleToolbar => Cmd.Of(() => { S.ShowToolbar = !S.ShowToolbar; SettingsChanged(); });
     public ICommand ToggleSettings => Cmd.Of(() => { MenuOpen = false; SettingsOpen = !SettingsOpen; });

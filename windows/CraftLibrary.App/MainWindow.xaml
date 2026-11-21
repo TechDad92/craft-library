@@ -220,14 +220,6 @@
                                 <TextBlock Text="Settings" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
                             </StackPanel>
                         </Button>
-                        <Button Style="{StaticResource Btn.Icon}" Width="36" Height="36" Command="{Binding ToggleToolbar}" Foreground="{DynamicResource B.muted}" Margin="4,0,0,0"
-                                ToolTip="Hide the toolbar" ToolTipService.IsEnabled="True" AutomationProperties.Name="Hide the toolbar">
-                            <c:Icon Glyph="{StaticResource Icon.ChevronDown}" Size="18">
-                                <c:Icon.LayoutTransform>
-                                    <RotateTransform Angle="180" />
-                                </c:Icon.LayoutTransform>
-                            </c:Icon>
-                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -303,15 +295,33 @@
                 </Grid>
             </DockPanel>
 
-            <!-- ============ When the toolbar is hidden: a slim tab hanging under the top bar, in the middle, to pull it back down ============ -->
+            <!-- ============ The toolbar's tab, hanging in the middle: under the toolbar to hide it, and under the top bar
+                 (once the toolbar is hidden) to bring it back. Coloured like whatever it hangs from. ============ -->
             <Button Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Top" Panel.ZIndex="5" Cursor="Hand" Command="{Binding ToggleToolbar}"
-                    Visibility="{Binding ToolbarVisible, Converter={StaticResource Vis}, ConverterParameter=not}"
-                    ToolTip="Show the toolbar" ToolTipService.IsEnabled="True" AutomationProperties.Name="Show the toolbar" FocusVisualStyle="{StaticResource FocusRing}">
+                    ToolTip="{Binding ToolbarTabHint}" ToolTipService.IsEnabled="True" AutomationProperties.Name="{Binding ToolbarTabHint}" FocusVisualStyle="{StaticResource FocusRing}">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="Tab" Width="64" Height="20" Background="{DynamicResource B.chrome}" BorderBrush="{DynamicResource B.divider}"
-                                BorderThickness="1.5,0,1.5,1.5" CornerRadius="0,0,12,12">
-                            <c:Icon Glyph="{StaticResource Icon.ChevronDown}" Size="16" Foreground="{DynamicResource B.chrome-muted}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Border x:Name="Tab" Width="64" Height="20" BorderThickness="1.5,0,1.5,1.5" CornerRadius="0,0,12,12">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="{DynamicResource B.panel}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource B.border}" />
+                                    <Setter Property="TextElement.Foreground" Value="{DynamicResource B.muted}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ToolbarVisible}" Value="False">
+                                            <Setter Property="Background" Value="{DynamicResource B.chrome}" />
+                                            <Setter Property="BorderBrush" Value="{DynamicResource B.divider}" />
+                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource B.chrome-muted}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <!-- Points the way the toolbar will go: up to hide it, down to bring it back -->
+                            <c:Icon Glyph="{StaticResource Icon.ChevronDown}" Size="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <c:Icon.LayoutTransform>
+                                    <RotateTransform Angle="{Binding ToolbarTabAngle}" />
+                                </c:Icon.LayoutTransform>
+                            </c:Icon>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
