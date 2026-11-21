@@ -118,6 +118,13 @@ public sealed class AppData
     public Dictionary<string, bool> Expanded { get; set; } = new(StringComparer.OrdinalIgnoreCase);
     public string? LastFolder { get; set; }
     public string? LastSelected { get; set; }
+    /// <summary>
+    /// Whether the first-run setup guide has been finished (or skipped). Missing in older saved data:
+    /// then it counts as done when a craft folder was already chosen, so existing users never see it unasked.
+    /// </summary>
+    public bool? SetupGuideDone { get; set; }
+    /// <summary>The guide's screen (1–8) to reopen at, if the app was closed partway through.</summary>
+    public int SetupGuideStep { get; set; } = 1;
     /// <summary>Count of files moved per day ("yyyy-MM-dd"), for "Show today's progress".</summary>
     public Dictionary<string, int> SortedPerDay { get; set; } = [];
 
@@ -169,5 +176,7 @@ public sealed class AppData
         Programs ??= [];
         Expanded = new(Expanded ?? [], StringComparer.OrdinalIgnoreCase);
         SortedPerDay ??= [];
+        SetupGuideDone ??= Locations.Count > 0;
+        SetupGuideStep = Math.Clamp(SetupGuideStep, 1, 8);
     }
 }

@@ -89,6 +89,12 @@
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
                 <StackPanel Margin="18,14,18,32">
                     <TextBlock Text="Changes show straight away and are saved for next time. Open a section to see its settings." Style="{StaticResource Muted}" FontSize="14" />
+                    <Button Style="{StaticResource Btn.Plain}" Command="{Binding RunGuide}" HorizontalAlignment="Left" Margin="0,12,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <c:Icon Glyph="{StaticResource Icon.Sliders}" Size="18" Margin="0,0,8,0" />
+                            <TextBlock Text="Run the setup guide again" />
+                        </StackPanel>
+                    </Button>
                     <DockPanel Margin="0,14,0,0">
                         <Button DockPanel.Dock="Right" Style="{StaticResource Btn.Link}" Content="Collapse all" Command="{Binding CollapseAll}" FontSize="13" />
                         <Button DockPanel.Dock="Right" Style="{StaticResource Btn.Link}" Content="Expand all" Command="{Binding ExpandAll}" FontSize="13" Margin="8,0,0,0" />

@@ -44,6 +44,7 @@ public sealed partial class MainViewModel : ObservableObject
 
     public List<HistoryEntry> History { get; } = [];
     public SettingsViewModel SettingsVm { get; }
+    public SetupGuideViewModel Guide { get; }
     public HeaderRow Header { get; }
 
     public MainViewModel(string dataDir)
@@ -57,6 +58,7 @@ public sealed partial class MainViewModel : ObservableObject
         _watcher.Changed += () => _ui.BeginInvoke(() => RescanSoon());
         Header = new HeaderRow(this);
         SettingsVm = new SettingsViewModel(this);
+        Guide = new SetupGuideViewModel(this);
 
         _saveTimer = new DispatcherTimer(TimeSpan.FromMilliseconds(400), DispatcherPriority.Background, (_, _) => { _saveTimer!.Stop(); SaveNow(); }, _ui);
         _saveTimer.Stop();
@@ -78,6 +80,14 @@ public sealed partial class MainViewModel : ObservableObject
             if (Directory.Exists(downloads)) Data.InboxPath = downloads;
         }
         RefreshAll();
+        // First install: the setup guide, reopening at the screen it was left on.
+        if (Data.SetupGuideDone != true)
+        {
+            var step = Data.SetupGuideStep;
+            if (step > 2 && Data.Locations.Count == 0) step = 2;
+            Guide.Step = step;
+            GuideOpen = true;
+        }
         if (Data.Locations.Count > 0) await RescanAsync();
         _ = Task.Run(() =>
         {

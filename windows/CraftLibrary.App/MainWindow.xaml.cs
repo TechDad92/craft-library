@@ -164,6 +164,7 @@ public partial class MainWindow : Window
         else if (key == Key.BrowserBack) { vm.GoBack.Execute(null); e.Handled = true; }
         else if (key == Key.BrowserForward) { vm.GoForward.Execute(null); e.Handled = true; }
         else if (ctrl && e.Key == Key.F && vm.ShowSearch) { SearchBox.Focus(); SearchBox.SelectAll(); e.Handled = true; }
+        else if (e.Key == Key.Escape && vm.GuideOpen) { vm.Guide.GoBack(); e.Handled = true; }
         else if (e.Key == Key.Escape)
         {
             // Escape closes whatever is on top, one thing at a time.

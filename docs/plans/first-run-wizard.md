@@ -1,6 +1,7 @@
 # Plan: first-run setup guide ("wizard")
 
-Status: **plan only, not built yet.** Waiting for decisions (see "Questions" at the end).
+Status: **built in 0.4.0.** Decisions: keep screen 6 (some people won't be confident going into Settings);
+first install only (existing users run it from Settings); keep all 8 screens.
 
 ## Goal
 When Craft Library is opened for the first time, a short guide walks the person through the main choices,
