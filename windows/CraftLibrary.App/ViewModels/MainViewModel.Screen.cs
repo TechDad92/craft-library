@@ -44,6 +44,20 @@ public sealed partial class MainViewModel
 
     partial void OnSettingsOpenChanged(bool value) { if (value) SettingsVm.Refresh(); }
 
+    /// <summary>The first-run setup guide is showing.</summary>
+    [ObservableProperty] private bool _guideOpen;
+
+    partial void OnGuideOpenChanged(bool value) { if (value) { SettingsVm.Refresh(); Guide.Refresh(); } }
+
+    public ICommand RunGuide => Cmd.Of(() =>
+    {
+        SettingsOpen = false;
+        MenuOpen = false;
+        Guide.Step = 1;
+        GuideOpen = true;
+        Guide.Refresh();
+    });
+
     public bool HasToast => Toast.Length > 0;
     public bool ToastUndo => History.Count > 0 && !ToastPlain && S.Shows("undo");
 
@@ -210,7 +224,7 @@ public sealed partial class MainViewModel
         if (Selected != null && !_byPath.ContainsKey(Selected.Path)) Selected = null;
         RebuildRows();
         BuildSideRows();
-        if (SettingsOpen) SettingsVm.Refresh();
+        if (SettingsOpen || GuideOpen) { SettingsVm.Refresh(); Guide.Refresh(); }
         OnPropertyChanged(string.Empty);
     }
 

@@ -244,6 +244,27 @@ public sealed class DataTests : IDisposable
     }
 
     [Fact]
+    public void Setup_guide_shows_for_new_users_only()
+    {
+        var fresh = AppData.Load(Path.Combine(t.Root, "none.json"));
+        Assert.False(fresh.SetupGuideDone);
+        Assert.Equal(1, fresh.SetupGuideStep);
+
+        // Saved by an older version, with a craft folder already chosen: the guide counts as done.
+        var file = Path.Combine(t.Root, "old.json");
+        File.WriteAllText(file, """{ "locations": [ { "key": "C:\\Craft", "label": "Craft", "path": "C:\\Craft" } ] }""");
+        Assert.True(AppData.Load(file).SetupGuideDone);
+
+        // Closed partway through: remembers the screen.
+        var d = AppData.Load(Path.Combine(t.Root, "part.json"));
+        d.SetupGuideStep = 4;
+        d.Save(Path.Combine(t.Root, "part.json"));
+        var back = AppData.Load(Path.Combine(t.Root, "part.json"));
+        Assert.False(back.SetupGuideDone);
+        Assert.Equal(4, back.SetupGuideStep);
+    }
+
+    [Fact]
     public void A_damaged_file_falls_back_to_the_backup()
     {
         var file = Path.Combine(t.Root, "data.json");

@@ -273,6 +273,7 @@ public sealed partial class MainViewModel
         _resetScroll = true;
         RefreshAll();
         _ = RescanAsync();
+        if (GuideOpen) Guide.FolderChosen();
     }
 
     public void ForgetLocation(string key)

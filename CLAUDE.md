@@ -4,7 +4,7 @@ A Windows desktop app that helps the user's mum organise thousands of craft file
 patterned papers (JPG/PNG/PSD), SVG/DXF/EPS/Silhouette cut files, Word documents that hold a paper
 image, PDFs, zip bundles and fonts. It's a file manager first, with sorting tools added on.
 
-Current version: **0.3.4**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
+Current version: **0.4.0**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
 The Electron version is in `legacy-electron/` for reference only. Do not change it.
 
 ## Who it's for: these rules matter
@@ -102,7 +102,9 @@ portable-drive "Removed files" folder, speed on a low-end PC.
 - Settings start fresh (the Electron version kept them in its own browser storage).
 
 ## Plans
-- `docs/plans/first-run-wizard.md`: the first-run setup guide (planned, not built; has open questions).
+- `docs/plans/first-run-wizard.md`: the first-run setup guide (built in 0.4.0: `Views/SetupGuideView.xaml`,
+  `ViewModels/SetupGuideViewModel.cs`; reuses `SettingsViewModel`'s option lists, so keep them in step).
+  Shown when `AppData.SetupGuideDone` is false (new installs only); "Run the setup guide again" is in Settings.
 
 ## Next step
 Mum is trying the app and will have a list of changes. Work through her feedback, keeping the rules above.

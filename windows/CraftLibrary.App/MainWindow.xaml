@@ -48,7 +48,8 @@
                     </StackPanel>
 
                     <!-- Middle: Menu, then search -->
-                    <StackPanel x:Name="BannerCenter" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True">
+                    <StackPanel x:Name="BannerCenter" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True"
+                                IsEnabled="{Binding GuideOpen, Converter={StaticResource Not}}">
                         <Grid x:Name="MenuArea" Margin="0,0,12,0">
                             <ToggleButton x:Name="MenuBtn" Style="{StaticResource Btn.Plain}" IsChecked="{Binding MenuOpen}" ToolTip="Duplicates, Undo, History and Settings"
                                           IsHitTestVisible="{Binding IsOpen, ElementName=MenuPopup, Converter={StaticResource Not}}" AutomationProperties.Name="Menu">
@@ -240,6 +241,11 @@
             <!-- Below the banner, so the window buttons stay reachable. -->
             <Grid Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" Width="440" Visibility="{Binding SettingsOpen, Converter={StaticResource Vis}}">
                 <v:SettingsView DataContext="{Binding SettingsVm}" />
+            </Grid>
+
+            <!-- ============ First-run setup guide (below the banner, so the window buttons still work) ============ -->
+            <Grid Grid.Row="1" Grid.RowSpan="2" Visibility="{Binding GuideOpen, Converter={StaticResource Vis}}">
+                <v:SetupGuideView DataContext="{Binding Guide}" />
             </Grid>
 
             <!-- ============ Pop-up windows ============ -->

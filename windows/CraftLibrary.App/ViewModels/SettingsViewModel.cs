@@ -26,6 +26,7 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
     public void Refresh() => OnPropertyChanged(string.Empty);
 
     public ICommand Close => main.CloseSettings;
+    public ICommand RunGuide => main.RunGuide;
 
     private List<OptionVm> Seg(string current, params (string Value, string Label, Action<Settings> Apply)[] opts) =>
         opts.Select(o => new OptionVm { Label = o.Label, On = current == o.Value, Pick = SetCmd(o.Apply) }).ToList();
@@ -274,17 +275,20 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
             var exts = new SortedSet<string>(FileKinds.CommonExts, StringComparer.OrdinalIgnoreCase);
             foreach (var e in main.AllExtensions()) exts.Add(e);
             foreach (var e in S.OpenWith.Keys) exts.Add(e.ToLowerInvariant());
-            return exts.Select(e =>
-            {
-                var def = main.Platform.DefaultProgramName(e);
-                var choices = new List<ChoiceVm> { new() { Value = "", Label = "Windows default" + (def.Length > 0 ? " (" + def + ")" : " (none set)") } };
-                choices.AddRange(main.Data.Programs.Select(p => new ChoiceVm { Value = p.Exe, Label = p.Name }));
-                choices.Add(new ChoiceVm { Value = "__choose", Label = "Choose a program…" });
-                var cur = S.OpenWith.GetValueOrDefault(e, "");
-                return new OpenWithRowVm { Ext = e, Label = "." + e + " · " + FileKinds.TypeLabel(e), Choices = choices, Selected = choices.FirstOrDefault(c => string.Equals(c.Value, cur, StringComparison.OrdinalIgnoreCase)) ?? choices[0] };
-            }).ToList();
+            return BuildOpenWithRows(exts, "Windows default");
         }
     }
+
+    /// <summary>One row per file ending, each with "Windows default", her saved programs and "Choose a program…".</summary>
+    public List<OpenWithRowVm> BuildOpenWithRows(IEnumerable<string> exts, string defaultWord) => exts.Select(e =>
+    {
+        var def = main.Platform.DefaultProgramName(e);
+        var choices = new List<ChoiceVm> { new() { Value = "", Label = defaultWord + (def.Length > 0 ? " (" + def + ")" : " (none set)") } };
+        choices.AddRange(main.Data.Programs.Select(p => new ChoiceVm { Value = p.Exe, Label = p.Name }));
+        choices.Add(new ChoiceVm { Value = "__choose", Label = "Choose a program…" });
+        var cur = S.OpenWith.GetValueOrDefault(e, "");
+        return new OpenWithRowVm { Ext = e, Label = "." + e + " · " + FileKinds.TypeLabel(e), Choices = choices, Selected = choices.FirstOrDefault(c => string.Equals(c.Value, cur, StringComparison.OrdinalIgnoreCase)) ?? choices[0] };
+    }).ToList();
 
     /// <summary>Called when she picks a program for a file type in Settings.</summary>
     public void ChooseProgram(string ext, string value)
