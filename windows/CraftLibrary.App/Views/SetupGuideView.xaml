@@ -244,7 +244,7 @@
                             <TextBlock Style="{StaticResource Intro}" Text="Folders often have other things in them, like spreadsheets or programs. Tick any kinds of file you’d rather not see in Craft Library." />
                             <TextBlock Style="{StaticResource Help}" Margin="0,0,0,16" Text="Hidden files stay safely in their folders: they’re just out of sight. You can show them again any time in Settings." />
                             <Border Background="{DynamicResource B.subtle}" CornerRadius="12" Padding="14,12" Visibility="{Binding HasHideRows, Converter={StaticResource Vis}, ConverterParameter=not}">
-                                <TextBlock FontSize="15" TextWrapping="Wrap" Text="No files were found in your folder yet, so there’s nothing to hide. You can do this later in Menu › Settings, under “Layout”." />
+                                <TextBlock FontSize="15" TextWrapping="Wrap" Text="No files were found in your folder yet, so there’s nothing to hide. You can do this later in Menu › Settings, under “Files &amp; safety”." />
                             </Border>
                             <ItemsControl ItemsSource="{Binding HideRows}" ItemTemplate="{StaticResource CheckRow}" Focusable="False" />
                         </StackPanel>

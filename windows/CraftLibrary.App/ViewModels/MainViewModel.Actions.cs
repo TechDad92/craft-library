@@ -337,7 +337,7 @@ public sealed partial class MainViewModel
         var e = ext.ToLowerInvariant();
         if (!S.IsHiddenExt(e)) S.HiddenExts.Add(e);
         SettingsChanged();
-        ShowMessage("All ." + e + " files are now hidden. They’re still in their folders. To see them again: Menu › Settings › Layout › Hide kinds of files.");
+        ShowMessage("All ." + e + " files are now hidden. They’re still in their folders. To see them again: Menu › Settings › Files & safety › Hide kinds of files.");
     }
 
     /// <summary>Opens one of her folders in File Explorer.</summary>

@@ -55,9 +55,9 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
         ("colours", "Colours", "Palette", ["Theme", "Accent", "Strength", "Tint"], "colours colors theme light dark accent pastel muted bold background tint"),
         ("style", "Background", "Layers", ["Texture"], "background pattern plain dots cutting mat pinstripe wash"),
         ("text", "Text & fonts", "TextAa", ["Fonts", "TextSize", "LineSpacing"], "text fonts font size line spacing reading dyslexic easy"),
-        ("layout", "Layout", "Layout", ["View", "Thumb", "Preview", "Sidebar", "Density", "ShowName", "ShowType", "ShowSize", "ShowDate", "Order", "BtnLabels", "HiddenExts"], "layout grid list thumbnails thumbnail size preview panel window folder list spacing compact show name type date order icons words hide hidden kinds types"),
+        ("layout", "Layout", "Layout", ["View", "Thumb", "Preview", "Sidebar", "Density", "ShowName", "ShowType", "ShowSize", "ShowDate", "Order", "BtnLabels"], "layout grid list thumbnails thumbnail size preview panel window folder list spacing compact show name type date order icons words"),
         ("comfort", "Comfort & focus", "Heart", ["HighContrast", "ReduceMotion", "FadeMessages", "Tips", "ShowProgress", "Remember"], "comfort focus contrast motion messages fade hover explain progress remember left off"),
-        ("files", "Files & safety", "Shield", ["AskRecycle", "ShowBadges", "OpenWith"], "files safety recycle remove ask sure duplicates badges open programs program"),
+        ("files", "Files & safety", "Shield", ["AskRecycle", "ShowBadges", "OpenWith", "HiddenExts"], "files safety recycle remove ask sure duplicates badges open programs program hide hidden kinds types"),
         ("features", "Buttons & features", "Toggles", ["Features"], "buttons features hide hidden show off turn"),
     ];
 
@@ -81,8 +81,7 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
             }
             case "layout":
                 return (S.View == "grid" ? "Grid" : "List") + " · " + (S.Thumb switch { "s" => "small", "l" => "large", "xl" => "extra large", _ => "medium" }) + " thumbnails · "
-                    + (S.Preview switch { "bottom" => "preview at the bottom", "popout" => "preview in its own window", "hidden" => "preview hidden", _ => "preview on the right" })
-                    + (S.HiddenExts.Count > 0 ? " · " + S.HiddenExts.Count + (S.HiddenExts.Count == 1 ? " kind of file hidden" : " kinds of file hidden") : "");
+                    + (S.Preview switch { "bottom" => "preview at the bottom", "popout" => "preview in its own window", "hidden" => "preview hidden", _ => "preview on the right" });
             case "comfort":
             {
                 var n = new[] { S.HighContrast, S.ReduceMotion, S.FadeMessages, S.Tips, S.ShowProgress, S.Remember }.Count(b => b);
@@ -91,7 +90,8 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
             case "files":
             {
                 var n = S.OpenWith.Count;
-                return (S.AskRecycle ? "Asks before removing" : "Removes without asking") + " · " + (n > 0 ? n + (n == 1 ? " program changed" : " programs changed") : "Windows default programs");
+                return (S.AskRecycle ? "Asks before removing" : "Removes without asking") + " · " + (n > 0 ? n + (n == 1 ? " program changed" : " programs changed") : "Windows default programs")
+                    + (S.HiddenExts.Count > 0 ? " · " + S.HiddenExts.Count + (S.HiddenExts.Count == 1 ? " kind of file hidden" : " kinds of file hidden") : "");
             }
             default:
             {

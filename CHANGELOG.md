@@ -2,6 +2,9 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.5.1 (21 Nov 2026)
+"Hide kinds of files" moved to Settings › Files & safety. See [docs/releases/0.5.1.md](docs/releases/0.5.1.md).
+
 ## 0.5.0 (21 Nov 2026)
 Hide kinds of files (Settings › Layout, right-click, and a new setup guide screen, now 9 screens). Hidden files
 stay in their folders, just out of sight. See [docs/releases/0.5.0.md](docs/releases/0.5.0.md).
