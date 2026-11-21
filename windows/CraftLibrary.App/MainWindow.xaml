@@ -23,6 +23,7 @@
             </Grid.LayoutTransform>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -58,7 +59,7 @@
                                 </StackPanel>
                             </ToggleButton>
                             <Popup x:Name="MenuPopup" IsOpen="{Binding MenuOpen}" StaysOpen="False" PlacementTarget="{Binding ElementName=MenuBtn}" Placement="Bottom" AllowsTransparency="True" PopupAnimation="Fade">
-                                <Border Style="{StaticResource PopupCard}" Width="290">
+                                <c:ShadowBorder Style="{StaticResource PopupCard}" Width="290">
                                     <StackPanel>
                                         <Button Style="{StaticResource Btn.Row}" Command="{Binding GoDupes}" Visibility="{Binding FeatDupes, Converter={StaticResource Vis}}">
                                             <DockPanel>
@@ -67,15 +68,6 @@
                                                 </Border>
                                                 <c:Icon Glyph="{StaticResource Icon.Copy}" Size="18" Margin="4,0,12,0" />
                                                 <TextBlock Text="Duplicates" VerticalAlignment="Center" />
-                                            </DockPanel>
-                                        </Button>
-                                        <Button Style="{StaticResource Btn.Row}" Command="{Binding MenuUndo}" IsEnabled="{Binding CanUndo}" Visibility="{Binding FeatUndo, Converter={StaticResource Vis}}" Padding="8,6">
-                                            <DockPanel>
-                                                <c:Icon Glyph="{StaticResource Icon.Undo}" Size="18" Margin="4,0,12,0" />
-                                                <StackPanel>
-                                                    <TextBlock Text="Undo" />
-                                                    <TextBlock Text="{Binding UndoHint}" FontSize="12" FontWeight="Normal" Foreground="{DynamicResource B.muted}" TextTrimming="CharacterEllipsis" />
-                                                </StackPanel>
                                             </DockPanel>
                                         </Button>
                                         <Button Style="{StaticResource Btn.Row}" Command="{Binding ToggleFocus}" Visibility="{Binding FeatFocus, Converter={StaticResource Vis}}" ToolTip="Hide the folder list and search so you can concentrate on the files">
@@ -101,7 +93,7 @@
                                             </DockPanel>
                                         </Button>
                                     </StackPanel>
-                                </Border>
+                                </c:ShadowBorder>
                             </Popup>
                         </Grid>
                         <Grid x:Name="SearchArea" Width="480" VerticalAlignment="Center" Visibility="{Binding ShowSearch, Converter={StaticResource Vis}}">
@@ -113,56 +105,6 @@
 
                     <!-- Right: occasional buttons, then minimise / maximise / close -->
                     <StackPanel x:Name="BannerRight" Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0" WindowChrome.IsHitTestVisibleInChrome="True">
-                            <Border Visibility="{Binding ShowProgressPill, Converter={StaticResource Vis}}" Background="{DynamicResource B.panel}" CornerRadius="999" Padding="14,8" Margin="0,0,10,0" VerticalAlignment="Center">
-                                <StackPanel Orientation="Horizontal">
-                                    <c:Icon Glyph="{StaticResource Icon.Check}" Size="16" Foreground="{DynamicResource B.accent-text}" Margin="0,0,6,0" />
-                                    <TextBlock Text="{Binding ProgressText}" FontSize="13" FontWeight="SemiBold" />
-                                </StackPanel>
-                            </Border>
-                            <Button Style="{StaticResource Btn.Plain}" Margin="0,0,10,0" Visibility="{Binding Focus, Converter={StaticResource Vis}}" Command="{Binding ToggleFocus}" Background="{DynamicResource B.accent}" Foreground="{DynamicResource B.on-accent}" BorderBrush="{DynamicResource B.accent-line}">
-                                <StackPanel Orientation="Horizontal">
-                                    <c:Icon Glyph="{StaticResource Icon.Focus}" Size="18" Margin="0,0,8,0" />
-                                    <TextBlock Text="Exit focus" />
-                                </StackPanel>
-                            </Button>
-                            <Grid Margin="0,0,10,0" Visibility="{Binding HasHiddenShown, Converter={StaticResource Vis}}">
-                                <ToggleButton x:Name="HiddenBtn" Style="{StaticResource Btn.Plain}" IsChecked="{Binding HiddenMenuOpen}" ToolTip="Things you have hidden. Click to bring them back."
-                                              IsHitTestVisible="{Binding IsOpen, ElementName=HiddenPopup, Converter={StaticResource Not}}">
-                                    <StackPanel Orientation="Horizontal">
-                                        <c:Icon Glyph="{StaticResource Icon.EyeOff}" Size="18" Margin="0,0,8,0" Visibility="{DynamicResource V.btnIcon}" />
-                                        <TextBlock Text="Hidden" Visibility="{DynamicResource V.btnWord}" />
-                                        <Border Background="{DynamicResource B.subtle}" CornerRadius="999" Padding="7,0" Margin="8,0,0,0">
-                                            <TextBlock Text="{Binding HiddenCount}" FontSize="12" />
-                                        </Border>
-                                    </StackPanel>
-                                </ToggleButton>
-                                <Popup x:Name="HiddenPopup" IsOpen="{Binding HiddenMenuOpen}" StaysOpen="False" PlacementTarget="{Binding ElementName=HiddenBtn}" Placement="Bottom" AllowsTransparency="True" PopupAnimation="Fade">
-                                    <Border Style="{StaticResource PopupCard}" Width="300">
-                                        <StackPanel>
-                                            <TextBlock Text="HIDDEN FOR NOW" Style="{StaticResource SectionLabel}" Margin="8,4,8,6" />
-                                            <ItemsControl ItemsSource="{Binding HiddenFeatures}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <DockPanel Margin="8,2">
-                                                            <Button DockPanel.Dock="Right" Style="{StaticResource Btn.Link}" Content="Show" Command="{Binding Show}" />
-                                                            <TextBlock Text="{Binding Label}" VerticalAlignment="Center" FontSize="14" />
-                                                        </DockPanel>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                            <Button Style="{StaticResource Btn.Plain}" Content="Show all" Command="{Binding ShowAllHidden}" Margin="8,8,8,4" />
-                                        </StackPanel>
-                                    </Border>
-                                </Popup>
-                            </Grid>
-                            <Button Style="{StaticResource Btn.Plain}" Margin="0,0,10,0" Command="{Binding GoBrowse}" Visibility="{Binding ShowHome, Converter={StaticResource Vis}}">
-                                <StackPanel Orientation="Horizontal">
-                                    <c:Icon Glyph="{StaticResource Icon.Home}" Size="18" Margin="0,0,8,0" Visibility="{DynamicResource V.btnIcon}" />
-                                    <TextBlock Text="Home" Visibility="{DynamicResource V.btnWord}" />
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="14,-12,-24,0" WindowChrome.IsHitTestVisibleInChrome="True">
                             <Button Style="{StaticResource Btn.Caption}" Click="OnMinimise" ToolTip="Minimise" AutomationProperties.Name="Minimise">
                                 <c:Icon Glyph="{StaticResource Icon.WinMin}" Size="20" Thickness="1.2" />
@@ -178,8 +120,104 @@
                 </Grid>
             </Border>
 
+            <!-- ============ Toolbar: Back / Forward, Undo / Redo, and quick view controls ============ -->
+            <Border Grid.Row="1" Background="{DynamicResource B.panel}" BorderBrush="{DynamicResource B.border}" BorderThickness="0,0,0,1" Padding="16,8"
+                    TextElement.FontFamily="{DynamicResource F.banner}" Visibility="{Binding ShowToolbar, Converter={StaticResource Vis}}">
+                <DockPanel LastChildFill="False">
+                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                        <Button Style="{StaticResource Btn.Tool}" Command="{Binding GoBack}" IsEnabled="{Binding CanGoBack}" ToolTip="{Binding BackHint}" ToolTipService.ShowOnDisabled="True" AutomationProperties.Name="Back">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Glyph="{StaticResource Icon.Back}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
+                                <TextBlock Text="Back" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource Btn.Tool}" Command="{Binding GoForward}" IsEnabled="{Binding CanGoForward}" ToolTip="{Binding ForwardHint}" ToolTipService.ShowOnDisabled="True" AutomationProperties.Name="Forward">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Glyph="{StaticResource Icon.Forward}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
+                                <TextBlock Text="Forward" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
+                            </StackPanel>
+                        </Button>
+                        <Rectangle Width="1" Height="26" Fill="{DynamicResource B.border}" Margin="6,0,14,0" Visibility="{Binding FeatUndo, Converter={StaticResource Vis}}" />
+                        <Button Style="{StaticResource Btn.Tool}" Command="{Binding Undo}" IsEnabled="{Binding CanUndo}" ToolTip="{Binding UndoHint}" ToolTipService.ShowOnDisabled="True" Visibility="{Binding FeatUndo, Converter={StaticResource Vis}}" AutomationProperties.Name="Undo">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Glyph="{StaticResource Icon.Undo}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
+                                <TextBlock Text="Undo" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource Btn.Tool}" Command="{Binding Redo}" IsEnabled="{Binding CanRedo}" ToolTip="{Binding RedoHint}" ToolTipService.ShowOnDisabled="True" Visibility="{Binding FeatUndo, Converter={StaticResource Vis}}" AutomationProperties.Name="Redo">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Glyph="{StaticResource Icon.Redo}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
+                                <TextBlock Text="Redo" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                        <Border Visibility="{Binding ShowProgressPill, Converter={StaticResource Vis}}" Background="{DynamicResource B.panel}" CornerRadius="999" Padding="14,8" Margin="0,0,10,0" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Glyph="{StaticResource Icon.Check}" Size="16" Foreground="{DynamicResource B.accent-text}" Margin="0,0,6,0" />
+                                <TextBlock Text="{Binding ProgressText}" FontSize="13" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Border>
+                        <Button Style="{StaticResource Btn.Plain}" Margin="0,0,10,0" Visibility="{Binding Focus, Converter={StaticResource Vis}}" Command="{Binding ToggleFocus}" Background="{DynamicResource B.accent}" Foreground="{DynamicResource B.on-accent}" BorderBrush="{DynamicResource B.accent-line}">
+                            <StackPanel Orientation="Horizontal">
+                                <c:Icon Glyph="{StaticResource Icon.Focus}" Size="18" Margin="0,0,8,0" />
+                                <TextBlock Text="Exit focus" />
+                            </StackPanel>
+                        </Button>
+                        <Grid Margin="0,0,10,0" Visibility="{Binding HasHiddenShown, Converter={StaticResource Vis}}">
+                            <ToggleButton x:Name="HiddenBtn" Style="{StaticResource Btn.Plain}" IsChecked="{Binding HiddenMenuOpen}" ToolTip="Things you have hidden. Click to bring them back."
+                                          IsHitTestVisible="{Binding IsOpen, ElementName=HiddenPopup, Converter={StaticResource Not}}">
+                                <StackPanel Orientation="Horizontal">
+                                    <c:Icon Glyph="{StaticResource Icon.EyeOff}" Size="18" Margin="0,0,8,0" Visibility="{DynamicResource V.btnIcon}" />
+                                    <TextBlock Text="Hidden" Visibility="{DynamicResource V.btnWord}" />
+                                    <Border Background="{DynamicResource B.subtle}" CornerRadius="999" Padding="7,0" Margin="8,0,0,0">
+                                        <TextBlock Text="{Binding HiddenCount}" FontSize="12" />
+                                    </Border>
+                                </StackPanel>
+                            </ToggleButton>
+                            <Popup x:Name="HiddenPopup" IsOpen="{Binding HiddenMenuOpen}" StaysOpen="False" PlacementTarget="{Binding ElementName=HiddenBtn}" Placement="Bottom" AllowsTransparency="True" PopupAnimation="Fade">
+                                <c:ShadowBorder Style="{StaticResource PopupCard}" Width="300">
+                                    <StackPanel>
+                                        <TextBlock Text="HIDDEN FOR NOW" Style="{StaticResource SectionLabel}" Margin="8,4,8,6" />
+                                        <ItemsControl ItemsSource="{Binding HiddenFeatures}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <DockPanel Margin="8,2">
+                                                        <Button DockPanel.Dock="Right" Style="{StaticResource Btn.Link}" Content="Show" Command="{Binding Show}" />
+                                                        <TextBlock Text="{Binding Label}" VerticalAlignment="Center" FontSize="14" />
+                                                    </DockPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <Button Style="{StaticResource Btn.Plain}" Content="Show all" Command="{Binding ShowAllHidden}" Margin="8,8,8,4" />
+                                    </StackPanel>
+                                </c:ShadowBorder>
+                            </Popup>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding ShowViewControls, Converter={StaticResource Vis}}">
+                            <TextBlock Text="Show as" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource B.muted}" Margin="8,0,8,0" />
+                            <Button Style="{StaticResource Btn.ToolSeg}" c:Ui.Active="{Binding ViewIsGrid}" Command="{Binding ShowAsGrid}" ToolTip="Grid of thumbnails" AutomationProperties.Name="Show as grid">
+                                <StackPanel Orientation="Horizontal">
+                                    <c:Icon Glyph="{StaticResource Icon.Grid4}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
+                                    <TextBlock Text="Grid" Margin="6,0,0,0" Visibility="{DynamicResource V.btnWord}" />
+                                </StackPanel>
+                            </Button>
+                            <Button Style="{StaticResource Btn.ToolSeg}" c:Ui.Active="{Binding ViewIsList}" Command="{Binding ShowAsList}" ToolTip="List with details" AutomationProperties.Name="Show as list">
+                                <StackPanel Orientation="Horizontal">
+                                    <c:Icon Glyph="{StaticResource Icon.List}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
+                                    <TextBlock Text="List" Margin="6,0,0,0" Visibility="{DynamicResource V.btnWord}" />
+                                </StackPanel>
+                            </Button>
+                            <TextBlock Text="Order by" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource B.muted}" Margin="14,0,8,0" />
+                            <ComboBox ItemsSource="{Binding OrderChoices}" SelectedItem="{Binding OrderChoice}" Width="160" MinHeight="36" FontSize="14" AutomationProperties.Name="Order files by" />
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
             <!-- ============ Folder list | files | preview ============ -->
-            <DockPanel Grid.Row="1" LastChildFill="True">
+            <DockPanel Grid.Row="2" LastChildFill="True">
                 <v:SidebarView DockPanel.Dock="{Binding SidebarRight, Converter={StaticResource SideIf}, ConverterParameter='Right|Left'}"
                                Visibility="{Binding ShowSidebar, Converter={StaticResource Vis}}" />
                 <v:PreviewView DockPanel.Dock="{Binding PreviewBottom, Converter={StaticResource SideIf}, ConverterParameter='Bottom|Right'}"
@@ -200,16 +238,16 @@
 
             <!-- ============ Settings panel (slides over from the right) ============ -->
             <!-- Below the banner, so the window buttons stay reachable. -->
-            <Grid Grid.Row="1" HorizontalAlignment="Right" Width="440" Visibility="{Binding SettingsOpen, Converter={StaticResource Vis}}">
+            <Grid Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Right" Width="440" Visibility="{Binding SettingsOpen, Converter={StaticResource Vis}}">
                 <v:SettingsView DataContext="{Binding SettingsVm}" />
             </Grid>
 
             <!-- ============ Pop-up windows ============ -->
-            <v:DialogsView Grid.Row="0" Grid.RowSpan="2" WindowChrome.IsHitTestVisibleInChrome="True" />
+            <v:DialogsView Grid.Row="0" Grid.RowSpan="3" WindowChrome.IsHitTestVisibleInChrome="True" />
 
             <!-- ============ Message at the bottom ============ -->
-            <Border Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="24,0,24,24" MaxWidth="760"
-                    Background="{DynamicResource B.toast}" CornerRadius="12" Padding="18,6,6,6" Effect="{StaticResource Shadow}"
+            <c:ShadowBorder Grid.Row="2" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="24,0,24,24" MaxWidth="760"
+                    Background="{DynamicResource B.toast}" CornerRadius="12" Padding="18,6,6,6"
                     Visibility="{Binding HasToast, Converter={StaticResource Vis}}" TextElement.FontFamily="{DynamicResource F.popups}">
                 <DockPanel>
                     <Button DockPanel.Dock="Right" Style="{StaticResource Btn.Icon}" Foreground="White" Command="{Binding DismissToast}" AutomationProperties.Name="Close message">
@@ -224,7 +262,7 @@
                     </Button>
                     <TextBlock Text="{Binding Toast}" Foreground="White" FontSize="15" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,6" />
                 </DockPanel>
-            </Border>
+            </c:ShadowBorder>
         </Grid>
     </Grid>
 </Window>

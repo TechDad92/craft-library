@@ -128,6 +128,10 @@ public sealed class HistoryEntry
     public string FromName { get; init; } = "";
     public bool LaterWas { get; init; }
     public List<RemovedEntry> Entries { get; set; } = [];
+    /// <summary>After an undo: where the file went back to (move / rename), so Redo can do it again.</summary>
+    public string UndonePath { get; set; } = "";
+    /// <summary>After undoing a removal: where the files were put back, so Redo can remove them again.</summary>
+    public List<string> UndonePaths { get; set; } = [];
 }
 
 public sealed class HistoryRowVm

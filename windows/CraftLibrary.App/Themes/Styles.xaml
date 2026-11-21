@@ -168,6 +168,23 @@
         </Style.Triggers>
     </Style>
 
+    <!-- Toolbar buttons (Back, Undo…): stitched like every button, a little more compact. -->
+    <Style x:Key="Btn.Tool" TargetType="ButtonBase" BasedOn="{StaticResource Btn.Plain}">
+        <Setter Property="MinHeight" Value="38" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="Margin" Value="0,0,8,0" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="ToolTipService.IsEnabled" Value="True" />
+    </Style>
+
+    <!-- Toolbar choices (Grid / List). -->
+    <Style x:Key="Btn.ToolSeg" TargetType="ButtonBase" BasedOn="{StaticResource Btn.Seg}">
+        <Setter Property="MinHeight" Value="38" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="Margin" Value="0,0,6,0" />
+        <Setter Property="ToolTipService.IsEnabled" Value="True" />
+    </Style>
+
     <!-- Round colour swatch (accent colours, folder labels). Content is not shown; Background is the colour. -->
     <Style x:Key="Btn.Swatch" TargetType="Button">
         <Setter Property="Width" Value="46" />
@@ -370,12 +387,11 @@
         <Setter Property="CornerRadius" Value="14" />
     </Style>
 
-    <DropShadowEffect x:Key="Shadow" BlurRadius="36" ShadowDepth="10" Direction="270" Opacity="0.22" Color="#0F172A" />
 
-    <Style x:Key="PopupCard" TargetType="Border" BasedOn="{StaticResource Card}">
+    <!-- Pop-up menus. The shadow is drawn by ShadowBorder (never an Effect: effects blur the text when the app is scaled). -->
+    <Style x:Key="PopupCard" TargetType="c:ShadowBorder" BasedOn="{StaticResource Card}">
         <Setter Property="Padding" Value="8" />
         <Setter Property="Margin" Value="12,6,12,24" />
-        <Setter Property="Effect" Value="{StaticResource Shadow}" />
         <Setter Property="TextElement.FontFamily" Value="{DynamicResource F.popups}" />
     </Style>
 
@@ -470,11 +486,11 @@
                         </ToggleButton>
                         <ContentPresenter Content="{TemplateBinding SelectionBoxItem}" Margin="12,0,36,0" VerticalAlignment="Center" IsHitTestVisible="False" />
                         <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
-                            <Border Style="{StaticResource Card}" Margin="0,4,0,16" Padding="6" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="320" Effect="{StaticResource Shadow}">
+                            <c:ShadowBorder Style="{StaticResource Card}" Margin="0,4,0,16" Padding="6" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" MaxHeight="320">
                                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                                     <ItemsPresenter />
                                 </ScrollViewer>
-                            </Border>
+                            </c:ShadowBorder>
                         </Popup>
                     </Grid>
                 </ControlTemplate>
