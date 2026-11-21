@@ -2,6 +2,10 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.7.0 (21 Nov 2026)
+New versions: a quiet check when the app opens, a small note with Update now / See what's new / Not now, and
+Settings › Files & safety › New versions (Check now). See [docs/releases/0.7.0.md](docs/releases/0.7.0.md).
+
 ## 0.6.2 (21 Nov 2026)
 Focus mode hides the toolbar too (pull it back down with the tab). See [docs/releases/0.6.2.md](docs/releases/0.6.2.md).
 

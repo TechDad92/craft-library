@@ -4,6 +4,7 @@
 
 Unicode true
 !include "MUI2.nsh"
+!include "FileFunc.nsh"
 
 !ifndef VERSION
   !error "Run the build script, which passes /DVERSION=x.y.z"
@@ -38,21 +39,51 @@ VIAddVersionKey "LegalCopyright" "Craft Library"
 !define MUI_FINISHPAGE_RUN "$INSTDIR\${EXENAME}"
 !define MUI_FINISHPAGE_RUN_TEXT "Open Craft Library now"
 
+; Started by the app's "Update now" with /update: only the progress page shows, then the app opens again.
+Var Updating
+
+!define MUI_PAGE_CUSTOMFUNCTION_PRE SkipWhenUpdating
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_INSTFILES
+!define MUI_PAGE_CUSTOMFUNCTION_PRE SkipWhenUpdating
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_LANGUAGE "English"
 
+Function .onInit
+  StrCpy $Updating "0"
+  ${GetParameters} $R0
+  ClearErrors
+  ${GetOptions} $R0 "/update" $R1
+  IfErrors +2 0
+    StrCpy $Updating "1"
+FunctionEnd
+
+Function SkipWhenUpdating
+  StrCmp $Updating "1" 0 +2
+    Abort
+FunctionEnd
+
 Section "Install"
   ; If Craft Library is open, ask to close it first (the program file can't be replaced while running).
+  ; When updating, the app is closing by itself, so first wait up to 15 seconds for it to finish.
+  StrCpy $1 60
+  StrCmp $Updating "1" 0 +2
+    StrCpy $1 0
   retry:
   ClearErrors
   FileOpen $0 "$INSTDIR\${EXENAME}" a
-  IfErrors 0 +3
-    IfFileExists "$INSTDIR\${EXENAME}" 0 +2
+  IfErrors 0 opened
+  IfFileExists "$INSTDIR\${EXENAME}" 0 opened
+  IntCmp $1 60 ask waitmore ask
+  waitmore:
+    IntOp $1 $1 + 1
+    Sleep 250
+    Goto retry
+  ask:
     MessageBox MB_RETRYCANCEL|MB_ICONEXCLAMATION "Please close Craft Library, then click Retry." IDRETRY retry IDCANCEL cancelled
+  opened:
   FileClose $0
 
   SetOutPath "$INSTDIR"
@@ -72,6 +103,12 @@ Section "Install"
   WriteRegStr HKCU "${REGKEY}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
   WriteRegDWORD HKCU "${REGKEY}" "NoModify" 1
   WriteRegDWORD HKCU "${REGKEY}" "NoRepair" 1
+
+  ; Updating: close this window when done and open the new version.
+  StrCmp $Updating "1" 0 done
+    SetAutoClose true
+    Exec '"$INSTDIR\${EXENAME}"'
+  done:
   Return
 
   cancelled:

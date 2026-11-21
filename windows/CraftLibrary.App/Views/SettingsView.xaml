@@ -287,6 +287,11 @@
                                         </StackPanel>
                                     </Border>
                                     <ItemsControl ItemsSource="{Binding HideRows}" ItemTemplate="{StaticResource CheckRow}" Focusable="False" />
+                                    <TextBlock Text="New versions" Style="{StaticResource Label}" />
+                                    <TextBlock Text="{Binding VersionLine}" Style="{StaticResource Muted}" Margin="0,0,0,10" />
+                                    <ItemsControl ItemsSource="{Binding UpdateChecks}" ItemTemplate="{StaticResource CheckRow}" Focusable="False" />
+                                    <Button Style="{StaticResource Btn.Plain}" Content="Check now" Command="{Binding CheckNow}" IsEnabled="{Binding CanCheckNow}" HorizontalAlignment="Left" />
+                                    <TextBlock Text="{Binding UpdateCheckStatus}" Style="{StaticResource Muted}" Margin="0,8,0,0" Visibility="{Binding HasUpdateCheckStatus, Converter={StaticResource Vis}}" />
                                 </StackPanel>
                                 <Button Style="{StaticResource Btn.Link}" Content="Reset this section" Command="{Binding Reset}" HorizontalAlignment="Left" Margin="0,8,0,0" Visibility="{Binding Changed, Converter={StaticResource Vis}}" />
                             </StackPanel>

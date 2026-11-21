@@ -95,6 +95,7 @@ public sealed partial class MainViewModel : ObservableObject
             foreach (var ext in FileKinds.CommonExts) Platform.DefaultProgramName(ext);
             _ui.BeginInvoke(() => { SettingsVm.SystemFonts = fonts; SettingsVm.Refresh(); });
         });
+        _ = CheckOnOpenAsync();
     }
 
     // ---------------- saving ----------------

@@ -57,7 +57,7 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
         ("text", "Text & fonts", "TextAa", ["Fonts", "TextSize", "LineSpacing"], "text fonts font size line spacing reading dyslexic easy"),
         ("layout", "Layout", "Layout", ["View", "Thumb", "Preview", "Sidebar", "Density", "ShowName", "ShowType", "ShowSize", "ShowDate", "Order", "BtnLabels", "ShowToolbar"], "layout grid list thumbnails thumbnail size preview panel window folder list spacing compact show name type date order icons words toolbar"),
         ("comfort", "Comfort & focus", "Heart", ["HighContrast", "ReduceMotion", "FadeMessages", "Tips", "ShowProgress", "Remember"], "comfort focus contrast motion messages fade hover explain progress remember left off"),
-        ("files", "Files & safety", "Shield", ["AskRecycle", "ShowBadges", "OpenWith", "HiddenExts"], "files safety recycle remove ask sure duplicates badges open programs program hide hidden kinds types"),
+        ("files", "Files & safety", "Shield", ["AskRecycle", "ShowBadges", "CheckUpdates", "OpenWith", "HiddenExts"], "files safety recycle remove ask sure duplicates badges open programs program hide hidden kinds types update updates new version"),
         ("features", "Buttons & features", "Toggles", ["Features"], "buttons features hide hidden show off turn"),
     ];
 
@@ -307,6 +307,17 @@ public sealed partial class SettingsViewModel(MainViewModel main) : ObservableOb
         new() { Label = "Ask “Are you sure?” before removing files", On = S.AskRecycle, Toggle = SetCmd(s => s.AskRecycle = !s.AskRecycle) },
         new() { Label = "Show duplicate badges on files", On = S.ShowBadges, Toggle = SetCmd(s => s.ShowBadges = !s.ShowBadges) },
     ];
+
+    // ---------------- new versions ----------------
+    public List<CheckVm> UpdateChecks =>
+    [
+        new() { Label = "Check for a new version when the app opens", Help = "If there is one, a small note asks whether you’d like it. Nothing is installed unless you say so.", On = S.CheckUpdates, Toggle = SetCmd(s => s.CheckUpdates = !s.CheckUpdates) },
+    ];
+    public string VersionLine => "You’re using Craft Library " + MainViewModel.AppVersionText + ".";
+    public ICommand CheckNow => main.CheckForUpdateNow;
+    public string UpdateCheckStatus => main.UpdateCheckStatus;
+    public bool HasUpdateCheckStatus => main.UpdateCheckStatus.Length > 0;
+    public bool CanCheckNow => !main.UpdateChecking;
 
     /// <summary>File endings found in her folders, plus any she has already chosen a program for.</summary>
     private SortedSet<string> KnownExts()

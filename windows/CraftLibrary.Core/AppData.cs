@@ -49,6 +49,8 @@ public sealed class Settings
     // Files & safety
     public bool AskRecycle { get; set; } = true;
     public bool ShowBadges { get; set; } = true;
+    /// <summary>Look on the Releases page for a newer version when the app opens. It only ever asks; nothing installs by itself.</summary>
+    public bool CheckUpdates { get; set; } = true;
     /// <summary>File ending (e.g. "pdf") → the program chosen for it. Missing means the Windows default.</summary>
     public Dictionary<string, string> OpenWith { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 

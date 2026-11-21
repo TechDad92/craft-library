@@ -4,7 +4,7 @@ A Windows desktop app that helps the user's mum organise thousands of craft file
 patterned papers (JPG/PNG/PSD), SVG/DXF/EPS/Silhouette cut files, Word documents that hold a paper
 image, PDFs, zip bundles and fonts. It's a file manager first, with sorting tools added on.
 
-Current version: **0.6.2**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
+Current version: **0.7.0**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
 The Electron version is in `legacy-electron/` for reference only. Do not change it.
 
 ## Who it's for: these rules matter
@@ -73,6 +73,12 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
   - Bind only to **properties**: WPF silently shows nothing for a field (this left "Order by" empty in 0.5.1).
   - **Never use `Effect` (DropShadowEffect etc.)**: it renders text as a bitmap, which blurs at Small/Large text
     size (the root is scaled). Use `Controls/ShadowBorder` for shadows.
+  - New versions (`MainViewModel.Updates.cs`, `Services/UpdateService.cs`, `Core/Updates.cs`): 4 s after opening (if
+    `Settings.CheckUpdates`) it reads GitHub's latest release for `Updates.Repo`. A small note (bottom corner, no dimming)
+    offers Update now / See what's new / Not now; nothing downloads unless she says so. The installer must be attached as
+    `Craft-Library-Setup-<version>.exe` (GitHub's own sha256 `digest` and size are checked before it runs). It runs with
+    `/update`: the installer waits for the app to close, shows only its progress page, then opens the app again.
+    Drafts and pre-releases are ignored, so a pre-release is a safe way to try a build first.
   - `App.xaml.cs`: single instance, unexpected errors go to `problems.log` and the app keeps going;
     `CRAFT_TRACE=1` writes binding problems to `bindings.log` (for testing).
 - `CraftLibrary.Tests`: xUnit, runs on Linux (`dotnet test windows/CraftLibrary.Tests`).
@@ -98,7 +104,7 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
 4. Commit, push, and push a tag `v<version>`. Send the user the installer file.
 5. Claude Code cloud sessions can't create GitHub releases (refused with 403), so the user publishes it:
    Releases › Draft a new release › tag `v<version>`, title `Craft Library <version>`, paste the notes,
-   attach the installer.
+   attach the installer. Keep the installer's file name exactly as built: the app's update check looks for it.
 
 ## Trying it without Windows (Wine)
 `apt install wine64 wine32:i386 xvfb xdotool imagemagick zip`, then:
@@ -109,7 +115,7 @@ can't find Wine's Recycle Bin, pop-ups show black corners, text spacing looks a 
 On some cloud machines Wine itself crashes ("free(): invalid pointer", even for `wine cmd`); then test on Windows.
 
 ## Not yet confirmed on real Windows
-Everything: 0.3.0 has only been run under Wine. Specifically: shell thumbnails (incl. PSD/EPS via PowerToys),
+Everything: 0.3.0 has only been run under Wine. Specifically: the 0.7.0 update (download, installer /update mode, reopening), shell thumbnails (incl. PSD/EPS via PowerToys),
 Recycle Bin + Put back, font install/uninstall, default program names, Open with, PDF thumbnails,
 portable-drive "Removed files" folder, speed on a low-end PC.
 
