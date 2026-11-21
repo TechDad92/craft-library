@@ -483,7 +483,7 @@ public sealed partial class MainViewModel
     public IEnumerable<FileItemVm> InstalledLibraryFonts() => _items.Where(i => i.IsFont && i.Installed);
 
     /// <summary>
-    /// Her files minus the kinds she has chosen to hide (Settings › Layout › Hide kinds of files). Everything she sees
+    /// Her files minus the kinds she has chosen to hide (Settings › Files &amp; safety › Hide kinds of files). Everything she sees
     /// (the file area, counts, search, Duplicates) uses this; the hidden files themselves are never touched.
     /// </summary>
     private IEnumerable<FileItemVm> Shown => S.HiddenExts.Count == 0 ? _items : _items.Where(i => !S.IsHiddenExt(i.Ext));

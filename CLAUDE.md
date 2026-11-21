@@ -4,7 +4,7 @@ A Windows desktop app that helps the user's mum organise thousands of craft file
 patterned papers (JPG/PNG/PSD), SVG/DXF/EPS/Silhouette cut files, Word documents that hold a paper
 image, PDFs, zip bundles and fonts. It's a file manager first, with sorting tools added on.
 
-Current version: **0.5.0**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
+Current version: **0.5.1**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
 The Electron version is in `legacy-electron/` for reference only. Do not change it.
 
 ## Who it's for: these rules matter
@@ -63,7 +63,7 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
     folders; Settings lists them first and keeps every other type under "Change how other kinds of files open".
   - Hidden kinds of files: `Settings.HiddenExts`. Everything she sees goes through `MainViewModel.Shown` (file area,
     counts, search, Duplicates); `_items` still holds every file. Hidden files are never touched. The note about how
-    many are hidden lives in Settings › Layout, not next to the files (her choice: keep the file area calm).
+    many are hidden lives in Settings › Files & safety (with the tick list), not next to the files (her choice: keep the file area calm).
   - **Never use `Effect` (DropShadowEffect etc.)**: it renders text as a bitmap, which blurs at Small/Large text
     size (the root is scaled). Use `Controls/ShadowBorder` for shadows.
   - `App.xaml.cs`: single instance, unexpected errors go to `problems.log` and the app keeps going;
