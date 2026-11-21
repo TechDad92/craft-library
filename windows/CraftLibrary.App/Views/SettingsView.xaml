@@ -73,7 +73,7 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Background="{DynamicResource B.panel}" BorderBrush="{DynamicResource B.border}" BorderThickness="1,0,0,0" Effect="{StaticResource Shadow}">
+    <c:ShadowBorder Background="{DynamicResource B.panel}" BorderBrush="{DynamicResource B.border}" BorderThickness="1,0,0,0">
         <DockPanel>
             <!-- Heading -->
             <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource B.border}" BorderThickness="0,0,0,1" Padding="22,14,12,14">
@@ -269,5 +269,5 @@
                 </StackPanel>
             </ScrollViewer>
         </DockPanel>
-    </Border>
+    </c:ShadowBorder>
 </UserControl>

@@ -122,7 +122,7 @@
                             </StackPanel>
                         </ToggleButton>
                         <Popup x:Name="OptionsPopup" IsOpen="{Binding FileOptionsOpen}" StaysOpen="False" PlacementTarget="{Binding ElementName=OptionsBtn}" Placement="Bottom" AllowsTransparency="True" PopupAnimation="Fade">
-                            <Border Style="{StaticResource PopupCard}" Width="{Binding ActualWidth, ElementName=OptionsBtn}" Margin="0,6,0,24">
+                            <c:ShadowBorder Style="{StaticResource PopupCard}" Width="{Binding ActualWidth, ElementName=OptionsBtn}" Margin="0,6,0,24">
                                 <StackPanel>
                                     <Button Style="{StaticResource Btn.Row}" Command="{Binding OpenMove}" Visibility="{Binding FeatMove, Converter={StaticResource Vis}}" ToolTip="Pick the folder this file belongs in">
                                         <DockPanel>
@@ -183,7 +183,7 @@
                                         </DockPanel>
                                     </Button>
                                 </StackPanel>
-                            </Border>
+                            </c:ShadowBorder>
                         </Popup>
                     </Grid>
 

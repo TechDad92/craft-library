@@ -4,7 +4,7 @@ A Windows desktop app that helps the user's mum organise thousands of craft file
 patterned papers (JPG/PNG/PSD), SVG/DXF/EPS/Silhouette cut files, Word documents that hold a paper
 image, PDFs, zip bundles and fonts. It's a file manager first, with sorting tools added on.
 
-Current version: **0.3.2**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
+Current version: **0.3.3**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
 The Electron version is in `legacy-electron/` for reference only. Do not change it.
 
 ## Who it's for: these rules matter
@@ -53,6 +53,11 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
     `Btn.Caption` buttons; `MainWindow.xaml.cs` handles `WM_GETMINMAXINFO` so maximised fills the work area.
     Banner layout: logo left | Menu + search centred on the window (equal side columns) | occasional buttons +
     window buttons right. `FitSearchBox()` narrows the search box (480 → 160) on small windows.
+  - Toolbar (row under the banner): Back/Forward (place history `_back`/`_forward`; call `Remember()` before going
+    somewhere new), Undo/Redo (`_redo`; `Record()` clears it unless it is a redo), Grid/List, Order by, then
+    Hidden / Exit focus / today's progress.
+  - **Never use `Effect` (DropShadowEffect etc.)**: it renders text as a bitmap, which blurs at Small/Large text
+    size (the root is scaled). Use `Controls/ShadowBorder` for shadows.
   - `App.xaml.cs`: single instance, unexpected errors go to `problems.log` and the app keeps going;
     `CRAFT_TRACE=1` writes binding problems to `bindings.log` (for testing).
 - `CraftLibrary.Tests`: xUnit, runs on Linux (`dotnet test windows/CraftLibrary.Tests`).

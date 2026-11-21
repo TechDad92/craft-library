@@ -138,12 +138,31 @@ public partial class MainWindow : Window
         }
     }
 
+    /// <summary>The side buttons on a mouse go Back and Forward, as in File Explorer.</summary>
+    protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
+    {
+        if (Vm is { } vm)
+        {
+            if (e.ChangedButton == MouseButton.XButton1) { vm.GoBack.Execute(null); e.Handled = true; }
+            else if (e.ChangedButton == MouseButton.XButton2) { vm.GoForward.Execute(null); e.Handled = true; }
+        }
+        base.OnPreviewMouseDown(e);
+    }
+
     protected override void OnPreviewKeyDown(KeyEventArgs e)
     {
         var vm = Vm;
         if (vm == null) { base.OnPreviewKeyDown(e); return; }
         var ctrl = (Keyboard.Modifiers & ModifierKeys.Control) != 0;
-        if (ctrl && e.Key == Key.Z && e.OriginalSource is not TextBox) { _ = vm.UndoStepsAsync(1); e.Handled = true; }
+        var shift = (Keyboard.Modifiers & ModifierKeys.Shift) != 0;
+        var key = e.Key == Key.System ? e.SystemKey : e.Key; // Alt+key arrives as a "system" key
+        var alt = (Keyboard.Modifiers & ModifierKeys.Alt) != 0;
+        if (e.OriginalSource is not TextBox && ((ctrl && key == Key.Y) || (ctrl && shift && key == Key.Z))) { _ = vm.RedoAsync(); e.Handled = true; }
+        else if (ctrl && key == Key.Z && e.OriginalSource is not TextBox) { _ = vm.UndoStepsAsync(1); e.Handled = true; }
+        else if (alt && key == Key.Left) { vm.GoBack.Execute(null); e.Handled = true; }
+        else if (alt && key == Key.Right) { vm.GoForward.Execute(null); e.Handled = true; }
+        else if (key == Key.BrowserBack) { vm.GoBack.Execute(null); e.Handled = true; }
+        else if (key == Key.BrowserForward) { vm.GoForward.Execute(null); e.Handled = true; }
         else if (ctrl && e.Key == Key.F && vm.ShowSearch) { SearchBox.Focus(); SearchBox.SelectAll(); e.Handled = true; }
         else if (e.Key == Key.Escape)
         {

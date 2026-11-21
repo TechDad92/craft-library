@@ -21,10 +21,10 @@
                     <TextBlock Text="No preview" FontSize="12" FontWeight="SemiBold" Foreground="#566170" HorizontalAlignment="Center" Margin="0,6,0,0" />
                 </StackPanel>
                 <!-- "6 files inside" on zip bundles -->
-                <Border VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,10" Background="White" CornerRadius="999" Padding="10,2"
-                        Visibility="{Binding HasInner, Converter={StaticResource Vis}}" Effect="{StaticResource Shadow}">
+                <c:ShadowBorder VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,10" Background="White" CornerRadius="999" Padding="10,2"
+                        Visibility="{Binding HasInner, Converter={StaticResource Vis}}" ShadowSize="6" ShadowDrop="2" ShadowOpacity="0.3">
                     <TextBlock Text="{Binding InnerText}" FontSize="12" FontWeight="SemiBold" Foreground="#1C2430" />
-                </Border>
+                </c:ShadowBorder>
                 <Border Style="{StaticResource TypeBadge}">
                     <TextBlock Text="{Binding TypeBadge}" />
                 </Border>

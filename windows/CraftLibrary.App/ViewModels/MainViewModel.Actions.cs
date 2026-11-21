@@ -21,8 +21,12 @@ public sealed partial class MainViewModel
         return default;
     }
 
-    private void Record(HistoryEntry e)
+    /// <summary>Things she undid, newest last, so Redo can do them again. Any new action clears it.</summary>
+    private readonly List<HistoryEntry> _redo = [];
+
+    private void Record(HistoryEntry e, bool isRedo = false)
     {
+        if (!isRedo) _redo.Clear();
         History.Add(e);
         ToastPlain = false;
         Toast = e.Msg;
@@ -35,10 +39,70 @@ public sealed partial class MainViewModel
         SaveSoon();
     }
 
-    // ---------------- going places ----------------
+    // ---------------- going places (with Back and Forward, like File Explorer) ----------------
+
+    private readonly record struct Place(string View, string Folder, string FocusDup);
+    private readonly List<Place> _back = [];
+    private readonly List<Place> _forward = [];
+    private bool _navigating;
+
+    private Place Here => new(View, Folder, FocusDup);
+
+    /// <summary>Called just before going somewhere new, so Back can return here.</summary>
+    private void Remember(Place next)
+    {
+        if (_navigating || next == Here) return;
+        _back.Add(Here);
+        if (_back.Count > 100) _back.RemoveAt(0);
+        _forward.Clear();
+    }
+
+    private void GoTo(Place p)
+    {
+        _navigating = true;
+        try
+        {
+            if (p.View == "dupes") OpenDups(p.FocusDup);
+            else if (p.View == "bin") GoBin.Execute(null);
+            else if (p.Folder == Unsorted || p.Folder == LaterPile || FolderById(p.Folder) != null) SetFolder(p.Folder);
+            else SetFolder(Data.Locations.FirstOrDefault() is { } l ? PathRules.Norm(l.Path) : Unsorted);
+        }
+        finally { _navigating = false; }
+    }
+
+    public ICommand GoBack => Cmd.Of(() =>
+    {
+        if (_back.Count == 0) return;
+        var p = _back[^1];
+        _back.RemoveAt(_back.Count - 1);
+        _forward.Add(Here);
+        GoTo(p);
+    });
+
+    public ICommand GoForward => Cmd.Of(() =>
+    {
+        if (_forward.Count == 0) return;
+        var p = _forward[^1];
+        _forward.RemoveAt(_forward.Count - 1);
+        _back.Add(Here);
+        GoTo(p);
+    });
+
+    public bool CanGoBack => _back.Count > 0;
+    public bool CanGoForward => _forward.Count > 0;
+    public string BackHint => _back.Count > 0 ? "Back to " + PlaceName(_back[^1]) : "Nothing to go back to yet";
+    public string ForwardHint => _forward.Count > 0 ? "Forward to " + PlaceName(_forward[^1]) : "Nothing to go forward to";
+
+    private string PlaceName(Place p) => p.View switch
+    {
+        "dupes" => "Duplicates",
+        "bin" => "Recycle Bin",
+        _ => FolderById(p.Folder)?.Label is { Length: > 0 } l ? "“" + l + "”" : "the folder",
+    };
 
     public void SetFolder(string id)
     {
+        Remember(new Place("browse", id, ""));
         FileItemVm.Thumbs?.ClearQueue();
         Folder = id;
         _query = "";
@@ -55,12 +119,13 @@ public sealed partial class MainViewModel
 
     public ICommand GoInbox => Cmd.Of(() => SetFolder(Unsorted));
     public ICommand GoLater => Cmd.Of(() => SetFolder(LaterPile));
-    public ICommand GoBin => Cmd.Of(() => { View = "bin"; _query = ""; Renaming = false; RefreshAll(); });
-    public ICommand GoBrowse => Cmd.Of(() => { View = "browse"; Renaming = false; RefreshAll(); });
+    public ICommand GoBin => Cmd.Of(() => { Remember(new Place("bin", Folder, "")); View = "bin"; _query = ""; Renaming = false; RefreshAll(); });
+    public ICommand GoBrowse => Cmd.Of(() => { Remember(new Place("browse", Folder, "")); View = "browse"; Renaming = false; RefreshAll(); });
     public ICommand GoDupes => Cmd.Of(() => OpenDups(""));
 
     public void OpenDups(string key)
     {
+        Remember(new Place("dupes", Folder, key));
         MenuOpen = false;
         FocusDup = key;
         View = "dupes";
@@ -70,6 +135,7 @@ public sealed partial class MainViewModel
 
     public void ShowInFolder(FileItemVm it)
     {
+        Remember(new Place("browse", it.Folder, ""));
         View = "browse";
         Folder = it.Folder;
         _query = "";
@@ -119,6 +185,9 @@ public sealed partial class MainViewModel
     public ICommand CloseHistory => Cmd.Of(() => HistoryOpen = false);
     public ICommand MenuUndo => Cmd.Of(() => { MenuOpen = false; _ = UndoStepsAsync(1); });
     public ICommand Undo => Cmd.Of(() => _ = UndoStepsAsync(1));
+    public ICommand Redo => Cmd.Of(() => _ = RedoAsync());
+    public bool CanRedo => _redo.Count > 0;
+    public string RedoHint => _redo.Count > 0 ? _redo[^1].Msg : "Nothing to redo";
     public ICommand ShowAllHidden => Cmd.Of(() =>
     {
         foreach (var f in Settings.FeatureList) if (S.Feature(f.Key) == "hide") S.Features[f.Key] = "show";
@@ -606,6 +675,7 @@ public sealed partial class MainViewModel
             problem = await UndoOneAsync(e);
             if (problem != null) break;
             History.RemoveAt(History.Count - 1);
+            _redo.Add(e);
             if (e.Type == "move")
             {
                 var day = DateTime.Now.ToString("yyyy-MM-dd");
@@ -635,6 +705,7 @@ public sealed partial class MainViewModel
                     var back = await Task.Run(() => _safe.Move(e.Path, Path.GetDirectoryName(e.FromPath)!, PathRules.SplitName(e.FromPath).Base));
                     Rekey(it, back, FolderForDir(Path.GetDirectoryName(back)!));
                     it.Later = e.LaterWas;
+                    e.UndonePath = back;
                     return null;
                 }
                 case "rename":
@@ -643,12 +714,14 @@ public sealed partial class MainViewModel
                     var back = await Task.Run(() => _safe.Rename(e.Path, e.FromName));
                     Rekey(it, back, it.Folder);
                     Selected = it;
+                    e.UndonePath = back;
                     return null;
                 }
                 case "recycle":
                 {
                     var (back, errors) = await RestoreEntriesAsync(e.Entries);
                     if (back.Count == 0) return errors.FirstOrDefault() ?? "Could not put the files back.";
+                    e.UndonePaths = back.Select(b => b.Back).ToList();
                     _lastScanSig = "";
                     await RescanAsync();
                     return null;
@@ -670,6 +743,7 @@ public sealed partial class MainViewModel
                     Data.Removed.AddRange(again);
                     _items = _items.Where(i => !gone.Contains(i.Path)).ToList();
                     foreach (var g in gone) _byPath.Remove(g);
+                    e.Entries = again;
                     return null;
                 }
                 case "install":
@@ -681,6 +755,99 @@ public sealed partial class MainViewModel
                 case "later":
                 case "unlater":
                     if (_byPath.TryGetValue(e.Path, out var item)) item.Later = e.Type == "unlater";
+                    return null;
+            }
+            return null;
+        }
+        catch (FriendlyException ex) { return ex.Message; }
+        catch (Exception ex) { return ex.Message; }
+    }
+
+    // ---------------- redo ----------------
+
+    /// <summary>Does the most recently undone step again, on the real files, with the same safety rules.</summary>
+    public async Task RedoAsync()
+    {
+        if (_busy || _redo.Count == 0) return;
+        _busy = true;
+        var e = _redo[^1];
+        var problem = await RedoOneAsync(e);
+        _busy = false;
+        if (problem != null)
+        {
+            ShowMessage("Couldn’t redo that: " + problem);
+            _redo.Clear(); // the files have changed since, so the rest can't be redone safely
+        }
+        else
+        {
+            _redo.RemoveAt(_redo.Count - 1);
+            Record(e, isRedo: true);
+            Toast = "Redone: " + e.Msg;
+        }
+        SaveSoon();
+        RecountAndRefresh();
+        RescanSoon();
+    }
+
+    private async Task<string?> RedoOneAsync(HistoryEntry e)
+    {
+        try
+        {
+            switch (e.Type)
+            {
+                case "move":
+                {
+                    if (!_byPath.TryGetValue(e.UndonePath, out var it)) return "“" + Path.GetFileName(e.UndonePath) + "” isn’t there any more.";
+                    var dest = await Task.Run(() => _safe.Move(e.UndonePath, Path.GetDirectoryName(e.Path)!, PathRules.SplitName(e.Path).Base));
+                    Rekey(it, dest, FolderForDir(Path.GetDirectoryName(dest)!));
+                    it.Later = false;
+                    e.Path = dest;
+                    return null;
+                }
+                case "rename":
+                {
+                    if (!_byPath.TryGetValue(e.UndonePath, out var it)) return "“" + Path.GetFileName(e.UndonePath) + "” isn’t there any more.";
+                    var dest = await Task.Run(() => _safe.Rename(e.UndonePath, PathRules.SplitName(e.Path).Base));
+                    Rekey(it, dest, it.Folder);
+                    Selected = it;
+                    e.Path = dest;
+                    return null;
+                }
+                case "recycle":
+                {
+                    var removed = await Task.Run(() =>
+                    {
+                        var list = new List<RemovedEntry>();
+                        foreach (var p in e.UndonePaths) { try { list.Add(_remover.Remove(p)); } catch { } }
+                        return list;
+                    });
+                    if (removed.Count == 0) return "the files couldn’t be removed again.";
+                    var gone = removed.Select(x => x.OrigPath).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                    Data.Removed.AddRange(removed);
+                    _items = _items.Where(i => !gone.Contains(i.Path)).ToList();
+                    foreach (var g in gone) { _byPath.Remove(g); Data.FileMeta.Remove(g); }
+                    e.Entries = removed;
+                    return null;
+                }
+                case "restore":
+                {
+                    var (back, errors) = await RestoreEntriesAsync(e.Entries);
+                    if (back.Count == 0) return errors.FirstOrDefault() ?? "the files couldn’t be put back.";
+                    e.Entries = back.Select(b => { b.Entry.RemovedPath = b.Back; return b.Entry; }).ToList();
+                    _lastScanSig = "";
+                    await RescanAsync();
+                    return null;
+                }
+                case "install":
+                {
+                    _safe.AssertAllowed(e.Path);
+                    await Task.Run(() => FontService.Install(e.Path));
+                    if (_byPath.TryGetValue(e.Path, out var it)) it.Installed = true;
+                    return null;
+                }
+                case "later":
+                case "unlater":
+                    if (_byPath.TryGetValue(e.Path, out var item)) item.Later = e.Type == "later";
                     return null;
             }
             return null;
