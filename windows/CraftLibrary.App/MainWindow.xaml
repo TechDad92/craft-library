@@ -50,8 +50,37 @@
                     <!-- Middle: Menu, then search -->
                     <StackPanel x:Name="BannerCenter" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" WindowChrome.IsHitTestVisibleInChrome="True"
                                 IsEnabled="{Binding GuideOpen, Converter={StaticResource Not}}">
-                        <Grid x:Name="MenuArea" Margin="0,0,12,0">
-                            <ToggleButton x:Name="MenuBtn" Style="{StaticResource Btn.Plain}" IsChecked="{Binding MenuOpen}" ToolTip="Duplicates, Undo, History and Settings"
+                        <Grid x:Name="SearchArea" Width="480" VerticalAlignment="Center" Visibility="{Binding ShowSearch, Converter={StaticResource Vis}}">
+                            <TextBox x:Name="SearchBox" Style="{StaticResource Field}" Background="{DynamicResource B.panel}" BorderBrush="Transparent" Padding="38,8,12,8"
+                                     Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" c:Ui.Placeholder="Search all files by name" AutomationProperties.Name="Search all files by name" />
+                            <c:Icon Glyph="{StaticResource Icon.Search}" Size="18" Foreground="{DynamicResource B.muted}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="13,0,0,0" />
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Right: occasional buttons, then minimise / maximise / close -->
+                    <StackPanel x:Name="BannerRight" Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="14,-12,-24,0" WindowChrome.IsHitTestVisibleInChrome="True">
+                            <Button Style="{StaticResource Btn.Caption}" Click="OnMinimise" ToolTip="Minimise" AutomationProperties.Name="Minimise">
+                                <c:Icon Glyph="{StaticResource Icon.WinMin}" Size="20" Thickness="1.2" />
+                            </Button>
+                            <Button x:Name="MaxButton" Style="{StaticResource Btn.Caption}" Click="OnMaximise" ToolTip="Maximise" AutomationProperties.Name="Maximise">
+                                <c:Icon x:Name="MaxIcon" Glyph="{StaticResource Icon.WinMax}" Size="20" Thickness="1.2" />
+                            </Button>
+                            <Button Style="{StaticResource Btn.CaptionClose}" Click="OnCloseWindow" ToolTip="Close" AutomationProperties.Name="Close">
+                                <c:Icon Glyph="{StaticResource Icon.WinClose}" Size="20" Thickness="1.2" />
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ============ Toolbar: Back / Forward, Undo / Redo, and quick view controls ============ -->
+            <Border Grid.Row="1" Background="{DynamicResource B.panel}" BorderBrush="{DynamicResource B.border}" BorderThickness="0,0,0,1" Padding="16,8"
+                    TextElement.FontFamily="{DynamicResource F.banner}" Visibility="{Binding ShowToolbar, Converter={StaticResource Vis}}">
+                <DockPanel LastChildFill="False">
+                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                        <Grid x:Name="MenuArea" Margin="0,0,8,0">
+                            <ToggleButton x:Name="MenuBtn" Style="{StaticResource Btn.Tool}" Margin="0" IsChecked="{Binding MenuOpen}" ToolTip="Duplicates, Focus mode, History and Settings"
                                           IsHitTestVisible="{Binding IsOpen, ElementName=MenuPopup, Converter={StaticResource Not}}" AutomationProperties.Name="Menu">
                                 <StackPanel Orientation="Horizontal">
                                     <c:Icon Glyph="{StaticResource Icon.Menu}" Size="18" Margin="0,0,8,0" />
@@ -97,35 +126,8 @@
                                 </c:ShadowBorder>
                             </Popup>
                         </Grid>
-                        <Grid x:Name="SearchArea" Width="480" VerticalAlignment="Center" Visibility="{Binding ShowSearch, Converter={StaticResource Vis}}">
-                            <TextBox x:Name="SearchBox" Style="{StaticResource Field}" Background="{DynamicResource B.panel}" BorderBrush="Transparent" Padding="38,8,12,8"
-                                     Text="{Binding Query, UpdateSourceTrigger=PropertyChanged}" c:Ui.Placeholder="Search all files by name" AutomationProperties.Name="Search all files by name" />
-                            <c:Icon Glyph="{StaticResource Icon.Search}" Size="18" Foreground="{DynamicResource B.muted}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="13,0,0,0" />
-                        </Grid>
-                    </StackPanel>
-
-                    <!-- Right: occasional buttons, then minimise / maximise / close -->
-                    <StackPanel x:Name="BannerRight" Grid.Column="2" HorizontalAlignment="Right" Orientation="Horizontal">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="14,-12,-24,0" WindowChrome.IsHitTestVisibleInChrome="True">
-                            <Button Style="{StaticResource Btn.Caption}" Click="OnMinimise" ToolTip="Minimise" AutomationProperties.Name="Minimise">
-                                <c:Icon Glyph="{StaticResource Icon.WinMin}" Size="20" Thickness="1.2" />
-                            </Button>
-                            <Button x:Name="MaxButton" Style="{StaticResource Btn.Caption}" Click="OnMaximise" ToolTip="Maximise" AutomationProperties.Name="Maximise">
-                                <c:Icon x:Name="MaxIcon" Glyph="{StaticResource Icon.WinMax}" Size="20" Thickness="1.2" />
-                            </Button>
-                            <Button Style="{StaticResource Btn.CaptionClose}" Click="OnCloseWindow" ToolTip="Close" AutomationProperties.Name="Close">
-                                <c:Icon Glyph="{StaticResource Icon.WinClose}" Size="20" Thickness="1.2" />
-                            </Button>
-                        </StackPanel>
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <!-- ============ Toolbar: Back / Forward, Undo / Redo, and quick view controls ============ -->
-            <Border Grid.Row="1" Background="{DynamicResource B.panel}" BorderBrush="{DynamicResource B.border}" BorderThickness="0,0,0,1" Padding="16,8"
-                    TextElement.FontFamily="{DynamicResource F.banner}" Visibility="{Binding ShowToolbar, Converter={StaticResource Vis}}">
-                <DockPanel LastChildFill="False">
-                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                        <Rectangle Width="1" Height="26" Fill="{DynamicResource B.border}" Margin="6,0,14,0" />
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding ShowNavTools, Converter={StaticResource Vis}}">
                         <Button Style="{StaticResource Btn.Tool}" Command="{Binding GoBack}" IsEnabled="{Binding CanGoBack}" ToolTip="{Binding BackHint}" ToolTipService.ShowOnDisabled="True" AutomationProperties.Name="Back">
                             <StackPanel Orientation="Horizontal">
                                 <c:Icon Glyph="{StaticResource Icon.Back}" Size="18" Visibility="{DynamicResource V.btnIcon}" />
@@ -151,6 +153,7 @@
                                 <TextBlock Text="Redo" Margin="8,0,0,0" Visibility="{DynamicResource V.btnWord}" />
                             </StackPanel>
                         </Button>
+                        </StackPanel>
                     </StackPanel>
 
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
@@ -196,7 +199,7 @@
                                 </c:ShadowBorder>
                             </Popup>
                         </Grid>
-                        <StackPanel Orientation="Horizontal" Visibility="{Binding ShowViewControls, Converter={StaticResource Vis}}">
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding ShowViewControls, Converter={StaticResource Vis}}" IsEnabled="{Binding ShowNavTools}">
                             <TextBlock Text="Show as" VerticalAlignment="Center" FontSize="14" Foreground="{DynamicResource B.muted}" Margin="8,0,8,0" />
                             <Button Style="{StaticResource Btn.ToolSeg}" c:Ui.Active="{Binding ViewIsGrid}" Command="{Binding ShowAsGrid}" ToolTip="Grid of thumbnails" AutomationProperties.Name="Show as grid">
                                 <StackPanel Orientation="Horizontal">

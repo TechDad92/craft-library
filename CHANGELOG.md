@@ -2,6 +2,9 @@
 
 Each version's full notes are in `docs/releases/`, ready to paste into a GitHub release.
 
+## 0.5.2 (21 Nov 2026)
+Menu button moved to the far left of the toolbar; fixed the empty "Order by" list. See [docs/releases/0.5.2.md](docs/releases/0.5.2.md).
+
 ## 0.5.1 (21 Nov 2026)
 "Hide kinds of files" moved to Settings › Files & safety. See [docs/releases/0.5.1.md](docs/releases/0.5.1.md).
 
