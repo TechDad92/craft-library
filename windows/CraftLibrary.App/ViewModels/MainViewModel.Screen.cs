@@ -143,11 +143,7 @@ public sealed partial class MainViewModel
     public ICommand ShowAsGrid => Cmd.Of(() => { if (S.View != "grid") { S.View = "grid"; SettingsChanged(); } });
     public ICommand ShowAsList => Cmd.Of(() => { if (S.View != "list") { S.View = "list"; SettingsChanged(); } });
     public bool ToolbarVisible => S.ShowToolbar;
-    public string ToolbarButtonText => S.ShowToolbar ? "Hide toolbar" : "Show toolbar";
-    public string ToolbarHint => S.ShowToolbar ? "Hide the toolbar (Back, Undo, Duplicates, Settings…) for a calmer screen" : "Show the toolbar again";
     public ICommand ToggleToolbar => Cmd.Of(() => { S.ShowToolbar = !S.ShowToolbar; SettingsChanged(); });
-    /// <summary>With the toolbar hidden, Focus mode can still be switched off from the banner.</summary>
-    public bool ShowBannerExitFocus => Focus && !S.ShowToolbar;
     public ICommand ToggleSettings => Cmd.Of(() => { MenuOpen = false; SettingsOpen = !SettingsOpen; });
     public bool ShowNavTools => !IsSetup;
     public bool ShowViewControls => View == "browse";

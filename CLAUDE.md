@@ -4,7 +4,7 @@ A Windows desktop app that helps the user's mum organise thousands of craft file
 patterned papers (JPG/PNG/PSD), SVG/DXF/EPS/Silhouette cut files, Word documents that hold a paper
 image, PDFs, zip bundles and fonts. It's a file manager first, with sorting tools added on.
 
-Current version: **0.6.0**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
+Current version: **0.6.1**, a C# (WPF, .NET 10) rebuild of the 0.2.3 Electron app, for speed on low-end PCs.
 The Electron version is in `legacy-electron/` for reference only. Do not change it.
 
 ## Who it's for: these rules matter
@@ -51,8 +51,9 @@ The Electron version is in `legacy-electron/` for reference only. Do not change 
   - Window: no Windows title bar (`WindowChrome`); the banner is the caption (`CaptionHeight` follows its height),
     so anything clickable in it needs `WindowChrome.IsHitTestVisibleInChrome="True"`. Minimise/maximise/close are
     `Btn.Caption` buttons; `MainWindow.xaml.cs` handles `WM_GETMINMAXINFO` so maximised fills the work area.
-    Banner layout: logo left | search centred on the window (equal side columns) | "Hide/Show toolbar" (+ "Exit
-    focus" when the toolbar is hidden and Focus is on) and window buttons right.
+    Banner layout: logo and name left | search centred on the window (equal side columns) | window buttons right.
+    **Keep the top bar to just those** (her choice). The toolbar is hidden by a small chevron at its right end and
+    brought back by a slim tab hanging under the middle of the top bar (`MainWindow.xaml`, row 2, ZIndex 5).
     `FitSearchBox()` narrows the search box (480 → 160) on small windows.
   - There is no Menu button any more (removed in 0.6.0). Toolbar (row under the banner, `Settings.ShowToolbar`):
     left = Back/Forward (place history `_back`/`_forward`; call `Remember()` before going
